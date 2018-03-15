@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		 <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+		<title></title>
+	</head>
+	<body>
+		<input type="file" id="fileId" name="fileId" value="上传图片"
+       hidefocus="true" onchange="getUrl(this.files,this.id);"/>
+       
+<canvas id="myCanvas"     style="display: none" ></canvas>
+
+old img-><br>
+<img src="" alt="" id="ago" style="width: 500px;"/>
+
+
+<input type="button" value="ya suo->" onclick="pressss()" />
+new img->
+<br>
+<img src="" alt="" id="press"/>
+
+<script type="text/javascript">
+	  /**
+         * 图片压缩，大仙造
+         * 技术交流495120021
+         * @param fil
+         * @param id
+         */
+        function getUrl(fil, id) {
+            var Cnv = document.getElementById('myCanvas');
+            var Cntx = Cnv.getContext('2d');//获取2d编辑容器
+            var imgss =   new Image();
+            var agoimg=document.getElementById("ago");
+            for (var intI = 0; intI < fil.length; intI++) {
+                var tmpFile = fil[intI];
+                var reader = new FileReader();
+                reader.readAsDataURL(tmpFile);
+                reader.onload = function (e) {
+                    url = e.target.result;
+                    imgss.src = url;
+                    agoimg.src=url;
+                    agoimg.onload = function () {
+                        //等比缩放
+                        var m = imgss.width / imgss.height;
+                         Cnv.height =150;//该值影响缩放后图片的大小
+                         Cnv.width= 150*m ;
+                        //img放入画布中
+                        //设置起始坐标，结束坐标
+                        Cntx.drawImage(agoimg, 0, 0,150*m,150);
+                    }
+                }
+            }
+        }
+
+
+        function  pressss(){//
+            //获取canvas压缩后的图片数据
+            var Pic = document.getElementById("myCanvas").toDataURL("image/png");
+            var imgs =document.getElementById("press");
+            imgs.src =Pic ;
+            //上传
+            // 去除多余，得到base64编码的图片字节流(可直接上传 不需要处理字节流)
+            Pic = Pic.replace(/^data:image\/(png|jpg);base64,/, "");
+            alert(Pic)
+            //可以用ajax提交到后台，提交后可以直接存数据库，也可以保存成图片，此处略。
+
+
+        }
+</script>
+	</body>
+</html>

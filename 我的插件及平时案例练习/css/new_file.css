@@ -1,0 +1,6 @@
+.am-flexbox{display:-webkit-box;display:-webkit-flex;-webkit-box-align:center;-webkit-align-items:center}
+.am-flexbox.am-flexbox-item{-webkit-box-sizing:border-box;-webkit-box-flex:1;-webkit-flex:1;margin-left:.08rem;min-width:.2rem}
+.am-flexbox .am-flexbox-item:first-child{margin-left:0}
+.am-wingblank,.am-wingblank.wb10px{margin-left:.1rem;margin-right:.1rem}
+.am-wingblank.wb15px{margin-left:.15rem;margin-right:.15rem}
+.am-wingblank.wb20px{margin-left:.2rem;margin-right:.2rem}

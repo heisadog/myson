@@ -1,0 +1,586 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" type="text/css" href="public/iconfont/iconfont.css"/>
+    <link rel="stylesheet" href="public/css/basic.css"/>
+    <link rel="stylesheet" href="public/css/cropper.min.css"/>
+    <title>保证图片显示完全版</title>
+</head>
+<style>
+    .avatarbox{
+        width: 100%;
+        overflow: hidden;
+    }
+    .avatarbox img{
+        /*display: block;*/
+        /*width: 100%;*/
+    }
+    .avatarbtn{
+        color: #647db4;
+        position: relative;
+        width: 120px;
+        height: 40px;
+        line-height: 40px;
+        background-color: #fff;
+    }
+    .avatarbtn em{
+        float: left;
+        margin-left: 20px;
+        font-style: normal;
+        padding: 5px;
+        font-size:24px;
+        font-family: 'wfyfont';line-height:8px;
+    }
+    .head_btn {
+        position: absolute;
+        right: 0px;top: 0;
+        width: 50px;
+        height: 50px;
+        font-family: "wfyfont";
+        font-size: 30px;
+        line-height: 50px;
+    }
+    .head_btn::after{
+        position: absolute;
+        left:0;
+        right: 0;
+        content: '\e67a';
+        font-family: "font";
+    }
+    .sg_uploader_file{
+        position: absolute;
+        left:0;
+        right: 0;
+        opacity: 0;
+        z-index: 10;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+<body class="bggray" style="background-color: #3b4547">
+<header class="thd ts200 main_bgcolor">
+    <div id="back" class="back" data-back="home"></div>
+    <span id="title">设置个人头像</span>
+    <div class="head_btn" id="headadd">
+        <!--<input type="file" id="fileId" src="" class="sg_uploader_file" >&lt;!&ndash; accept="image/*"&ndash;&gt;-->
+    </div>
+</header>
+</div>
+<div style="background-color: #fff">
+    <canvas class="none" id="canvas"></canvas>
+    <div class="avatarbox">
+        <img id="imgpreshow"  style="display: block;"  src="" alt="">
+    </div>
+    <div id="submit" style="line-height: 40px;text-align: center;color: #000;" class="none">完成</div>
+</div>
+
+<div id="coverBack" class="pf cover none"></div>
+<div id="shopBox" class="selectBox thd y100 ts200 os">
+    <ul class="wxalert">
+        <li class="camera">拍照</li>
+        <li class="photo" style="position: relative">从手机相册选择
+        </li>
+        <li></li>
+        <!--<li style="position: relative">测试-->
+            <!--<input type="file" id="fileId" src="" class="sg_uploader_file" >-->
+        <!--</li>-->
+        <li class="cancel">取消</li>
+    </ul>
+</div>
+
+<script type="text/javascript" src="self.js"></script>
+<script type="text/javascript" src="public/frame/cropper.min.js"></script>
+<script>
+    window.uexOnload = function(){
+
+    }
+    funs.openWin = function () {
+        $("#coverBack").removeClass("none");
+        $("#shopBox").removeClass("y100");
+    };
+    funs.closeWin = function () {
+        $("#coverBack").addClass("none");
+        $("#shopBox").addClass("y100");
+    };
+    var wid = document.body.clientWidth;
+    var hie = document.body.clientHeight;
+    var ig = new Image()
+    ig.src =_wfy_img_upload_src+localStorage.avatar
+    console.log(ig.src)
+
+    $(function () {
+        userinfo();
+        $('.avatarbox').css({
+            'margin-top':(hie-wid-50)/2
+        });
+        $('.avatarbox img').height(wid);
+        util.tap("#headadd",function () {
+            funs.openWin();
+        })
+//        取消
+        util.tap('.cancel',function () {
+            funs.closeWin();
+        })
+//        拍照
+        util.tap('#camera',function () {
+            var d = new Date();
+            var time = d.getTime();
+            var loca_x = '';
+            var loca_y = '';
+            var corp_x = '';
+            var corp_y = '';
+            var filename = "avatar"+time;//文件名
+            var extname = '';
+            var url = '';//从文件获取的原始路径
+
+            funs.closeWin();
+            var comtextareass = 0;
+            var quality = 100;
+            uexCamera.open(comtextareass, quality, function(picPath) {
+                url = picPath;
+                alert('拍照'+picPath);////xxx/xx.jpg  格式
+                $('#imgpreshow').attr('src',url);
+                $('#submit').removeClass('none');
+                $('#imgpreshow').cropper({
+                    aspectRatio: 4 / 4,
+                    crop: function(e) {
+                        loca_x = e.x;
+                        loca_y = e.y;
+                        corp_x = e.width;
+                        corp_y = e.height;
+                        console.log(e.width);
+                        console.log(e.height);
+                    }
+                });
+                util.tap('#submit',function () {
+                    funs.loading('正在上传');
+                    var image = new Image();
+                    image.src = url;
+                    image.onload = function(){
+                        var extname = url.substring(url.lastIndexOf(".")+1);
+                        //alert('拍照'+extname)//jpg
+                        var canvas = document.createElement("canvas");
+                        var context = canvas.getContext("2d");
+                        canvas.width  = corp_x;
+                        canvas.height = corp_y;
+                        context.drawImage(image,loca_x,loca_y,corp_x,corp_y,0,0,corp_x,corp_y);
+                        var base64 = canvas.toDataURL("image/"+extname);
+                        //alert('拍照'+base64) ;//z这个没获取到
+                        alert(corp_x+'-'+loca_y);
+                        //alert(JSON.stringify(image))
+                        var formData = new FormData();
+                        formData.append("src",base64);
+                        $.ajax({
+                            url: _wfy_img_upload_url+"?filename="+filename+"&extname="+extname,
+                            type: "POST",
+                            data: formData,
+                            processData: false,  // 告诉jQuery不要去处理发送的数据
+                            contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+                            success: function(xhr){
+                                localStorage.avatar = filename+'.'+extname;
+                                console.log('cheng')
+                                funs.unload();
+                                dialog.alert("更新成功")
+                            }
+                        });
+                    }
+                })
+            });
+        })
+//        相册
+        util.tap('#photo',function () {
+            var d = new Date();
+            var time = d.getTime();
+            var loca_x = '';
+            var loca_y = '';
+            var corp_x = '';
+            var corp_y = '';
+            var filename = "avatar"+time;//文件名
+            var extname = '';
+            var url = '';//从文件获取的原始路径
+            funs.closeWin();
+            var data = {
+                min:1,
+                max:3,
+                quality:0.8,
+                detailedInfo:true,
+                style:1
+                 }
+            uexImage.openPicker(data,function(error,info){
+                if(error==-1){
+                    alert("取消!");
+                }else if(error==0){
+                    if(info.detailedImageInfo){
+                        url = info.detailedImageInfo[0].localPath;
+                        alert('相册'+url)
+                        $('#imgpreshow').attr('src',url);
+                        $('#submit').removeClass('none');
+                        $('#imgpreshow').cropper({
+                            aspectRatio: 4 / 4,
+                            crop: function(e) {
+                                loca_x = e.x;
+                                loca_y = e.y;
+                                corp_x = e.width;
+                                corp_y = e.height;
+                                var base64 = $("#imgpreshow").cropper('getCroppedCanvas').toDataURL('base64', 0.3);
+                                var $imgData=$("#imgpreshow").cropper('getCroppedCanvas')
+                                var dataurl = $imgData.toDataURL('image/png');
+                                alert(dataurl)
+                            }
+                        });
+                        util.tap('#submit',function () {
+                            funs.loading('正在上传');
+                            var image = new Image();
+                            image.src = url;
+                            image.onload = function () {
+                                extname = imageSrc.substring(imageSrc.lastIndexOf(".")+1);
+                                alert('相册'+extname)//jpg
+                                var canvas = document.createElement("canvas");
+                                var context = canvas.getContext("2d");
+                                var m = image.width / image.height;
+                                canvas.width  = corp_x;
+                                canvas.height = corp_y;
+                                context.drawImage(image,loca_x,loca_y,corp_x,corp_y,0,0,corp_x,corp_y);
+                                var base64 = canvas.toDataURL("image/"+extname);
+                                var formData = new FormData();
+                                formData.append("src",base64);
+                                $.ajax({
+                                    url: _wfy_img_upload_url+"?filename="+filename+"&extname="+extname,
+                                    type: "POST",
+                                    data: formData,
+                                    processData: false,  // 告诉jQuery不要去处理发送的数据
+                                    contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+                                    success: function(xhr){
+                                        localStorage.avatar = filename+'.'+extname;
+                                        console.log('cheng')
+                                        funs.unload();
+                                        dialog.alert("更新成功")
+                                    }
+                                });
+                            }
+                        })
+                    }
+                }else{
+                    alert("error");
+                }
+            });
+        })
+
+
+        $('#fileId1').change(function () {
+            var d = new Date();
+            var time = d.getTime();
+            var loca_x = '';
+            var loca_y = '';
+            var corp_x = '';
+            var corp_y = '';
+            var filename = "avatar"+time;//文件名
+            var extname = 'jpg';
+            var url = '';//从文件获取的原始路径
+            var files = $(this)[0].files;
+            var f = files[0];
+            extname = f.name.split('.')[1];
+            var reader = new FileReader();
+            reader.readAsDataURL(f);
+            reader.onload =function(e){
+                funs.closeWin();
+                $('#submit').removeClass('none');
+                url = e.target.result;
+                var $img = $('#imgpreshow');
+                $img.attr('src',url);
+                $img.cropper({
+                    aspectRatio: 16 / 9,
+                    crop: function(e) {
+                        loca_x = e.x;
+                        loca_y = e.y;
+                        corp_x = e.width;
+                        corp_y = e.height;
+                        var canvas=$img.cropper('getCroppedCanvas')
+                        var bas = canvas.toDataURL("image/"+extname);
+                        $img.attr('src',bas);
+
+                        console.log(bas)
+//                        bas = $imgData.toDataURL('image/png');
+//                        console.error(bas)
+//                        var formData = new FormData();
+//                        formData.append('croppedImage', bas);
+//                        $.ajax({
+//                            url: _wfy_img_upload_url+"?filename="+filename+"&extname="+extname,
+//                            type: "POST",
+//                            data: formData,
+//                            processData: false,  // 告诉jQuery不要去处理发送的数据
+//                            contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+//                            success: function(xhr){
+//                                $('#imgpreshow').cropper('clear');
+//                                localStorage.avatar = filename+'.'+extname;
+//                                console.log('cheng')
+//                                funs.unload();
+//                                dialog.alert("更新成功")
+//                            }
+//                        });
+                    }
+                });
+                util.tap('#submit',function () {
+                    var image = new Image();
+                    image.src = url;
+                    image.onload = function () {
+//                        var canvas = document.createElement("canvas");
+//                        var context = canvas.getContext("2d");
+//                        canvas.width  = corp_x;
+//                        canvas.height = corp_y;//该值影响缩放后图片的大小
+//                        context.drawImage(image,loca_x,loca_y,corp_x,corp_y,0,0,corp_x,corp_y);
+//                        var base64 = canvas.toDataURL("image/"+extname);
+                        var formData = new FormData();
+                        formData.append("src",bas);
+                        console.log(corp_y)
+                        funs.loading('正在上传');
+                        $.ajax({
+                            url: _wfy_img_upload_url+"?filename="+filename+"&extname="+extname,
+                            type: "POST",
+                            data: formData,
+                            processData: false,  // 告诉jQuery不要去处理发送的数据
+                            contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+                            success: function(xhr){
+                                $('#imgpreshow').cropper('clear');
+                                localStorage.avatar = filename+'.'+extname;
+                                console.log('cheng')
+                                funs.unload();
+                                dialog.alert("更新成功")
+                            }
+                        });
+                    }
+                })
+            }
+        })
+
+
+        function getBase64Image(image,ext){
+            //@param image:Image 对象，ext:图片的格式(jpg)
+            var canvas = document.createElement("canvas");
+//            canvas.width = image.width;
+//            canvas.height = image.height;
+            var context = canvas.getContext("2d");
+            context.drawImage(image,0,0,1000,1000);
+            // 这里是不支持跨域的
+            var base64 = canvas.toDataURL("image/"+ext);
+            return base64;
+        }
+
+
+        /*----------------------------------------------------------综合版------------------------------------------------------*/
+        $('#fileId').change(function(ev) {
+//            let $file = $(this);
+//            let fileObj = $file[0];
+//            let windowURL = window.URL || window.webkitURL;
+//            let dataURL = null;
+//            if (!fileObj || !fileObj.files || !fileObj.files[0]) return;
+//            dataURL = windowURL.createObjectURL(fileObj.files[0]);
+//            console.log(dataURL)
+//            $("#imgpreshow").attr('src', dataURL);
+//            $("#imgpreshow").cropper({
+//                aspectRatio: 1 / 1,
+//                viewMode : 1,
+//                rotatable: true,
+//                guides :false,//裁剪框虚线 默认true有
+//                dragMode : "move",
+//                background : true,// 容器是否显示网格背景
+//                movable : true,//是否能移动图片
+//                cropBoxMovable :false,//是否允许拖动裁剪框
+//                cropBoxResizable :false,//是否允许拖动 改变裁剪框大小
+//            });
+//            $("#imgpreshow").cropper('replace', dataURL);
+//            funs.closeWin();
+//            $('#submit').removeClass('none');
+
+
+            /*--------------或者-----------------*/
+            var dataURL = '';//从文件获取的原始路径
+            var files = $(this)[0].files;
+            var f = files[0];
+            extname = f.name.split('.')[1];
+            var reader = new FileReader();
+            reader.readAsDataURL(f);
+            reader.onload = function (e) {
+                dataURL = e.target.result;
+                console.log(dataURL)
+                $("#imgpreshow").attr('src', dataURL);
+                $("#imgpreshow").cropper({
+                    aspectRatio: 1 / 1,
+                    viewMode : 1,
+                    rotatable: true,
+                    guides :false,//裁剪框虚线 默认true有
+                    dragMode : "move",
+                    background : true,// 容器是否显示网格背景
+                    movable : true,//是否能移动图片
+                    cropBoxMovable :false,//是否允许拖动裁剪框
+                    cropBoxResizable :false,//是否允许拖动 改变裁剪框大小
+                });
+                $("#imgpreshow").cropper('replace', dataURL);
+                funs.closeWin();
+                $('#submit').removeClass('none');
+            }
+        });
+        util.tap('#submit',function () {
+            if ($("#imgpreshow").cropper('getCroppedCanvas') == null){
+                return;
+            }else {
+                var base64 = $("#imgpreshow").cropper('getCroppedCanvas').toDataURL('base64', 0.3);
+                $('#imgpreshow').cropper('clear');
+            }
+            var load = Components.loading('正在上传');
+            setTimeout(function () {
+                var d = new Date();
+                var time = d.getTime();
+                var filename = "avatar"+time;//文件名
+                var extname = 'jpg';
+                var formData = new FormData();
+                formData.append("src",base64);
+                $.ajax({
+                    url: _wfy_img_upload_url+"?filename="+filename+"&extname="+extname+"&busstype=vip",
+                    type: "POST",
+                    data: formData,
+                    processData: false,  // 告诉jQuery不要去处理发送的数据
+                    contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+                    success: function(xhr){
+                        localStorage.avatar = filename+'.'+extname;
+                        console.log('cheng')
+                        var vBiz = new FYBusiness("biz.app.user.xtyhtx.save");
+                        var vOpr1 = vBiz.addCreateService("svc.app.user.xtyhtx.save", false);
+                        var vOpr1Data = vOpr1.addCreateData();
+                        vOpr1Data.setValue("AS_USERID", LoginName);
+                        vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+                        vOpr1Data.setValue("AS_FUNC", "svc.app.user.xtyhtx.save");
+                        vOpr1Data.setValue("AS_XTYHTX", _wfy_img_upload_src+localStorage.avatar);
+                        var ip = new InvokeProc();
+                        ip.addBusiness(vBiz);
+                        console.log(JSON.stringify(ip));
+                        ip.invoke(function(d){
+                            if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+                                // todo...
+                                Components.unload(load);
+                                console.log('保存成功！')
+                                dialog.alert('保存成功！',function () {
+                                    window.location.reload();
+                                })
+                            } else {
+                                // todo...[d.errorMessage]
+                                dialog.alert('保存数据失败')
+                            }
+                        }) ;
+                    }
+                });
+            },1000)
+        })
+
+        //        相册
+        util.tap('.photo',function () {
+            var dataURL = '';//从文件获取的原始路径
+            funs.closeWin();
+            var data = {
+                min:1,
+                max:3,
+                quality:0.8,
+                detailedInfo:true,
+                style:1
+            }
+            uexImage.openPicker(data,function(error,info){
+                if(error==-1){
+                    alert("取消!");
+                }else if(error==0){
+                    if(info.detailedImageInfo){
+                        dataURL = info.detailedImageInfo[0].localPath;
+                        $("#imgpreshow").attr('src', dataURL);
+                        $("#imgpreshow").cropper({
+                            aspectRatio: 1 / 1,
+                            viewMode : 1,
+                            rotatable: true,
+                            guides :false,//裁剪框虚线 默认true有
+                            dragMode : "move",
+                            background : true,// 容器是否显示网格背景
+                            movable : true,//是否能移动图片
+                            cropBoxMovable :false,//是否允许拖动裁剪框
+                            cropBoxResizable :false,//是否允许拖动 改变裁剪框大小
+                        });
+                        $("#imgpreshow").cropper('replace', dataURL);
+                        $('#submit').removeClass('none');
+                        //alert(dataURL);
+                    }
+                }else{
+                    alert("error");
+                }
+            });
+        })
+        //        拍照
+        util.tap('.camera',function () {
+            var dataURL = '';//从文件获取的原始路径
+            funs.closeWin();
+            var comtextareass = 0;
+            var quality = 100;
+            uexCamera.open(comtextareass, quality, function(picPath) {
+                dataURL = picPath;
+                $("#imgpreshow").attr('src', dataURL);
+                $("#imgpreshow").cropper({
+                    aspectRatio: 1 / 1,
+                    viewMode : 1,
+                    rotatable: true,
+                    guides :false,//裁剪框虚线 默认true有
+                    dragMode : "move",
+                    background : true,// 容器是否显示网格背景
+                    movable : true,//是否能移动图片
+                    cropBoxMovable :false,//是否允许拖动裁剪框
+                    cropBoxResizable :false,//是否允许拖动 改变裁剪框大小
+                });
+                $("#imgpreshow").cropper('replace', dataURL);
+                $('#submit').removeClass('none');
+                //alert(dataURL);
+            });
+        })
+
+    })
+
+
+
+
+
+
+
+
+
+
+    //window.location.href='http://www.wfy.com.cn/'
+    /*获取 用户的 姓名 头像...*/
+    var userinfo = function () {
+        var vBiz = new FYBusiness("biz.app.user.username");
+        var vOpr1 = vBiz.addCreateService("svc.app.user.username", false);
+        var vOpr1Data = vOpr1.addCreateData();
+        vOpr1Data.setValue("AS_USERID", LoginName);
+        vOpr1Data.setValue("AS_WLDM", DepartmentCode);
+        vOpr1Data.setValue("AS_FUNC", "svc.app.user.username");
+        var ip = new InvokeProc();
+        ip.addBusiness(vBiz);
+        ip.invoke(function(d){
+            if ((d.iswholeSuccess == "Y" || d.isAllBussSuccess == "Y")) {
+                var setMes = vOpr1.getResult(d, "AC_USERNAME").rows || [];
+                console.log(setMes);
+
+                if(wfy.empty(setMes[0].xtyhtx)){
+                    $('#imgpreshow').attr('src','http://www.wfy.com.cn/style/images/logo.png');
+                }else {
+                    $('#imgpreshow').attr('src',setMes[0].xtyhtx);
+                    $('#imgpreshow').css({
+                        'width':wid,
+                        'height':wid
+                    })
+                }
+                // todo...
+            } else {
+                // todo...[d.errorMessage]
+                console.log(d.errorMessage)
+            }
+        }) ;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>尝试图片上传的预览与压缩！不用第三方插件</title>
+		<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+		<script src="js/jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="imgupload.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div>一个按钮i</div>
+		<canvas id="myCanvas" ></canvas>
+		<input type="file" name="imgfile" id="imgfile" value="" />
+		<div>预览</div>
+		<div id="showimgbox">
+			
+		</div>
+		<script type="text/javascript">
+			$("#imgfile").imgloadsize({
+				canvasWidth:150,
+			    canvasHeight:150,
+			});
+		</script>
+	</body>
+</html>

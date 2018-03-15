@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	</head>
+	<link rel="stylesheet" type="text/css" href="tt.css"/>
+	<script src="jquery-2.1.4.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="tt.js" ></script>
+	
+	<body> 
+		<style type="text/css">
+		*{margin: 0;padding: 0;}
+			html{font-size:62.5%;}
+			.demo{background: red;float: left;}
+			#demop{width: 100%;height:100px;background: #ccc;margin-top: 100px;}
+		</style>
+		<input type="" name="aaa" id="aaa" value="" />
+		<div id="demop" data-id='ssss'>
+			hhhhhhhhhhhhhh
+		</div>
+		<div id="div" style="height: 1000px;"></div>
+    <script>
+    
+    	$("#demop").click(function(){
+    		var a = $("#aaa").val();
+    		console.log(isNaN(a))
+    		if(!(+a)){
+    			a = 5;
+    		}
+    		a = (a +"")
+    		console.log(a);
+    		$("#aaa").val("").focus();
+    	})
+    
+    
+    	window.onload=function(){
+//  		$.tap("#demop",function(_this){
+//  			var ss = $(_this).attr("data-id");
+//  			alert(ss)
+//  		})
+    	}
+    	
+    var a =["a","b","c","c","d"];
+    var b =["a","f","c"];
+    //a.del_common(b);
+    function del(arr1,arr2){
+    	//判断 第二个参数的值 是不是在 第一个 参数中
+    	for (var i = 0; i < arr2.length; i++) {
+    		for (var k = 0; k < arr1.length; k++) {
+    			if(arr2[i] == arr1[k]){
+    				//执行删除arr2[i] arr1[k]
+    				arr1.splice(k,1);
+    				arr2.splice(i,1);
+    			}
+    		}
+    	}
+    }
+    //a=a.removeVal("c");
+    del(a,b);
+    console.log(a);
+    console.log(b);
+    
+   </script>
+   <div id="duixing">
+   	测试对象
+   </div>
+   <style type="text/css">
+   
+   </style>
+   <script type="text/javascript">
+   	$("#duixing").big();
+   	$("#duixing").myPlugins();
+   	var fun ="aa";
+   	var fun = function(){
+   		alert(0)
+   	}
+   	$.prompt(fun1,fun2)
+   	function fun1(a){
+   		alert(a)
+   	}
+   	function fun2(a){
+   		alert(a)
+   	}
+//  $.prompt({
+//        text: "名字不能超过6个字符，不得出现不和谐文字",
+//        title: "输入姓名",
+//        onOK: function(text) {
+//          $.alert("您的名字是:"+text, "角色设定成功");
+//        },
+//        onCancel: function() {
+//          console.log("取消了");
+//        },
+//        input: 'Mr Noone'
+//      });
+   </script>
+    <div class="testtap">测试 事件</div>
+    <script type="text/javascript">
+    	console.log($(".testtap").empty(6))
+    	console.log($(".testtap").showd(6))
+    	//$.prompt("sss",function(){},function(){})
+    </script>
+	</body>
+</html>

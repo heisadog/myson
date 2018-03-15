@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+</head>
+<body>
+<script type="text/javascript">
+var db;  
+var request;
+var transaction;
+var objectStore;//对象仓库
+window.indexedDB=window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB;
+if(window.indexedDB){
+	//alert("您的浏览器支持IndexedDB数据库");
+}else{
+	alert("您的浏览器不支持IndexedDB数据库");
+}
+//创建或者打开数据库
+function createdb(dbName,n,tablename){
+	request=indexedDB.open(dbName,n);//参数为：数据库名和版本号；数据库存在，则打开它；否则创建。
+	request.onerror = function (event) {  
+           alert("打开数据库失败:"+event.target.message);  
+    }  
+    request.onsuccess = function (event) {  
+        alert("打开数据库成功!");
+        db=event.target.result;
+        transaction = db.transaction([tablename], "readwrite"); //事务操作的对象存储空间名   //事务模式:'readwrite'可读写模式;READ_ONLY只读模式;VERSION_CHANGE版本升级模式; 
+        objectStore = transaction.objectStore(tablename);//向info存储空间加入一个info对象，获得request对象用于处理用户对数据库的操作请求(同样拥有onerror，onupgradeneeded，onsuccess事件)
+        /*
+         *选择当前操作的对象空间 
+         * */
+    }   
+    request.onupgradeneeded = function(event) {  
+        alert("版本变化！");  
+        db = event.target.result;
+        if(!db.objectStoreNames.contains(tablename)) {//判断对象存储空间名称是否已经存在
+            objectStore = db.createObjectStore(tablename, {keyPath: "id",autoIncrement: true});//创建info对象存储空间;指定keyPath选项为Id（即主键为Id）
+	       }
+    }
+}
+//插入数据
+function insertdb(db,objectStoreName,argument){//这个是复杂的。第一个参数库名。第二个参数 相当于表名。第三个参数要穿的信息
+	request=indexedDB.open(db);
+	request.onsuccess = function (event) {
+		db=event.target.result;
+		transaction = db.transaction([objectStoreName], "readwrite");  
+	    objectStore = transaction.objectStore(objectStoreName);
+//	    transaction = db.transaction(["table"], "readwrite");  
+//	    objectStore = transaction.objectStore("table");  固定死哪一个表；        
+	    //objectStore.add(argument);  //使用add方法 此方法是异步的 有success和error事件：
+	    var add = objectStore.add(argument)//从新定义add 是为了用onsuccess，objectStore.add(argument);也一样添加
+	    add.onsuccess = function(e){
+	    	alert("添加成功！"); 
+	    }
+	}
+    
+}
+//删除
+function deletedb(dbName){  
+    try{  
+        request=indexedDB.deleteDatabase(dbName);  //删除数据库使用indexedDB对象的deleteDatabase方法
+        request.onerror = function () {  
+            alert("删除数据库失败:"+event.target.message);  
+        }  
+        request.onsuccess = function (event) {  
+            alert("删除数据库成功!"+dbName);  
+        }   
+    }catch(e){  
+       alert(e.getMessage);  
+    }  
+}
+
+//5、查询数据 get()方法用来读取数据，它的参数是键名
+function getdb(db,objectStoreName,id){
+	request=indexedDB.open(db);
+	request.onsuccess = function (event) {
+		db=event.target.result;
+		transaction = db.transaction([objectStoreName], "readwrite");  
+	    objectStore = transaction.objectStore(objectStoreName);
+	    var getmess = objectStore.get(id);
+	    getmess.onsuccess = function(e){
+	    	var message = e.target.result;
+	    	//alert(JSON.stringify(message))
+	    	alert(message.name);
+	    }
+	}
+}
+//6、更新数据 put()方法用来更新数据，貌似需要和get结合使用
+function putdb(db,objectStoreName,id){
+	request=indexedDB.open(db);
+	request.onsuccess = function (event) {
+		db=event.target.result;
+		transaction = db.transaction([objectStoreName], "readwrite");  
+	    objectStore = transaction.objectStore(objectStoreName);
+	    var getmess = objectStore.get(id);
+	    getmess.onsuccess = function(e){
+	    	var message = e.target.result;//这是数据
+	    	//在这查到数据后 重新赋值 或者 加个 整条信息的参数mes，message = mes 整条替换
+	    	objectStore.put(message)//把更换后的数据 更新
+	    }
+	}
+}
+//7、删除数据delete()方法用来删除数据，它的参数是键名  ||调用objectstore的clear方法可以清空objectstore
+function deleteMess(db,objectStoreName,id){
+	request=indexedDB.open(db);
+	request.onsuccess = function (event) {
+		db=event.target.result;
+		transaction = db.transaction([objectStoreName], "readwrite");  
+	    objectStore = transaction.objectStore(objectStoreName);
+	    var deletemess = objectStore.delete(id);
+	    deletemess.onsuccess = function(e){
+	    	alert("删除成功！"); 
+	    }
+	}
+}
+//8、清空数据表中的信息    调用objectstore 用clear方法
+function storeClear(db,objectStoreName){
+	request=indexedDB.open(db);
+	request.onsuccess = function (event) {
+		db=event.target.result;
+		transaction = db.transaction([objectStoreName], "readwrite");  
+	    objectStore = transaction.objectStore(objectStoreName);
+	    objectStore.clear();
+	}
+}	
+	createdb('delis',2,"delitable"); 
+    var argument ={
+    	id:1100,//这里可以修改 id
+		xm:"刘dageadd",  
+        nl:2033,  
+        xb:"dad"  
+	};
+	insertdb("deli","delitable",argument)
+	putdb("deli","delitable","1100")
+	
+
+Object.prototype.key_in_obj = function (key) {
+    var keys;
+    for( keys in this){
+        if(keys == key){
+            return true;
+        }else {
+            return false;
+        }
+    }
+}
+Array.prototype.val_in_array = function (val) {
+    for (i = 0; i < this.length; i++) {
+        if (this[i] == val)
+            return true;
+    }
+    return false;
+}
+// 判断 某个键 是否 存在 （）
+Array.prototype.key_in_array = function(k){
+    var arr =[];
+    for(var key in this){
+        //取得 所有的 key值 组成一个新的 数组；
+        arr.push(key);
+    }
+    if(arr.val_in_array(k)){
+        return true;
+    }else{
+        return false;
+    }
+}
+var jldw=[];
+var keys= "w";
+var re_danwei =[{"xtwpdm":"150000602","kcjldw":"PCS","kcbzjldw":"BX1","kczhfz":50,"kczhfm":1},{"xtwpdm":"150000610","kcjldw":"PCS","kcbzjldw":"KAR","kczhfz":1200,"kczhfm":1},{"xtwpdm":"150000622","kcjldw":"PCS","kcbzjldw":"PCS","kczhfz":1,"kczhfm":1}]
+for(var k = 0; k < re_danwei.length; k++){
+        if(!jldw.key_in_obj(re_danwei[k].xtwpdm)){
+            jldw[re_danwei[k].xtwpdm]=[];
+            var obj = {};
+            obj["dw"]=re_danwei[k].kcbzjldw;
+            obj["fm"]=re_danwei[k].kczhfm;
+            obj["fz"]=re_danwei[k].kczhfz;
+            jldw[re_danwei[k].xtwpdm].push(obj);
+        }else {
+            var obj = {};
+            obj["dw"]=re_danwei[k].kcbzjldw;
+            obj["fm"]=re_danwei[k].kczhfm;
+            obj["fz"]=re_danwei[k].kczhfz;
+            jldw[re_danwei[k].xtwpdm].push(obj);
+        }
+    }
+console.log(jldw);
+console.log(jldw.length);
+
+Object.prototype.key_in_obj = function (key) {
+    var keys;
+    for( keys in this){
+        if(keys == key){
+            return true;
+        }else {
+            return false;
+        }
+    }
+}
+var a ={"a":0,}
+console.log(a.key_in_obj("b"))
+//var defs = [W3C: "World Wide Web Consortium", DOM: "Document Object Model"];
+//var sss =[P150000602:[{"dw":"BX1","fm":1,"fz":50},{"dw":"KAR","fm":1,"fz":1200},{"dw":"PCS","fm":1,"fz":1}]];
+//console.log(defs.length)
+
+</script>
+</body>
+</html>

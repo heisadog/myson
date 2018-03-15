@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+		<title>vue.js练习</title>
+		<script src="js/jquery-2.1.4.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vue.js"></script>
+	</head>
+	<body>
+		<h2>测试基础</h2>
+		<div class="app0" v-bind:text="mess">
+			{{text}}
+			<div v-if="see">
+				你可以看见我
+			</div>
+			<div v-if="nosee">
+				你bu可以看见我
+			</div>
+			<ul>
+				<li v-for="result in content_array">
+					{{result}}
+				</li>
+				<li v-for="result in content_json">
+					{{result.name}}
+				</li>
+			</ul>
+			<div v-on:click="domess">
+				{{docont}}
+			</div>
+			<p>这里是input绑定的测试内容：{{p_input}}</p>
+			<input type="text" v-model="p_input" />
+		</div>
+		<h2>组件练习</h2>
+		<div id="vue0">
+			<ul>
+				<todo></todo>
+				
+			</ul>
+			<div v-html="htmlcont"></div>
+		</div>
+		
+		<script type="text/javascript">
+		    Vue.component('todo', {
+		    	props: ['todo'],
+				template: '<li>This is a todo</li>'
+				})
+			var vue = new Vue({
+				el:".app0",
+				data:{
+					text:"哈喽",
+					mess:"我是绑定",
+					nosee:false,
+					see:true,
+					content_array:[1,2],
+					content_json:[{name:"tom"},{name:"alin"}],
+					docont:"我是大哥",
+					p_input:""
+				},
+				methods:{
+					domess:function(){
+						this.docont =this.docont.split('').reverse().join('');
+					}
+				}
+			});
+			var vue0 = new Vue({
+				el:"#vue0",
+				data:{
+					text:"hhh",
+					htmlcont:"<p>hha</p>"
+				}
+			});
+			
+		</script>
+		
+	</body>
+</html>

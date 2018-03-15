@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<a href="2.html">2</a>
+		<script>
+			window.indexedDB=window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB;
+			  if(window.indexedDB){
+			    alert("您的浏览器支持IndexedDB数据库。");
+			  } else{
+			    alert("您的浏览器不支持IndexedDB数据库。");
+			  }
+			  
+			  request=window.indexedDB.open('testDB','2.0');
+			  console.log(request);
+			  request.onupgradeneeded = function(event) {
+			    mydb=request.result;//获得数据库实例对象
+			    if(!mydb.objectStoreNames.contains("students")) {//判断对象存储空间名称是否已经存在
+			        var objectStore = mydb.createObjectStore("students", {keyPath: "id"});//创建students对象存储空间;指定keyPath选项为id（即主键为id）
+			        //对象存储空间students的列email上创建一个唯一索引email,可以创建多个索引。
+			        objectStore.createIndex("email", //索引名
+			                                "email", //创建索引的列（即keyPath,索引属性字段名）
+			                                { unique: true }); //索引选项(索引属性值是否唯一:true or false)
+			      }
+			    }
+			  
+			  function insert(mydb){
+				    var data = {
+				        "id": "110",
+				        "name": "李明",
+				        "age": "35",
+				        "email": "liming5@email.com"
+				    };
+				    //使用事务
+				    var transaction = mydb.transaction('students','readwrite');   //事务操作的对象存储空间名   //事务模式:'readwrite'可读写模式;READ_ONLY只读模式;VERSION_CHANGE版本升级模式;
+				    //2.1、当事务中的所有操作请求都被处理完成时触发
+				    transaction.oncomplete = function(event) {};
+				    //2.2、当事务中出现错误时触发，默认的处理方式为回滚事务；
+				    transaction.onerror = function(event) {};
+				    //2.3、当事务被终止时触发
+				    transaction.onabort = function(event){};
+				    //2.4、从事务中获得相关的对象存储空间对象
+				    var objStore = transaction.objectStore('students');
+				    //向students存储空间加入一个student对象，获得request对象用于处理用户对数据库的操作请求(同样拥有onerror，onupgradeneeded，onsuccess事件)
+				    var request = objStore.add(data);
+				    request.onsuccess = function(e) {
+				        alert("成功插入数据，id=" + e.target.result);
+				    };
+				}
+			   insert(mydb);
+		</script>
+		<div>
+			在hbuiler真机测试hello html5和mui框架 都可以显示，一旦将程序转到项目中就无法实现，尤其报错：plus is no 定义； 
+		</div>
+	</body>
+</html>

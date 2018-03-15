@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>首页演示</title>
+<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta content="telephone=no" name="format-detection"/>
+<link rel="stylesheet" type="text/css" href="../public/css/reset.css"/>
+<link rel="stylesheet" type="text/css" href="../public/css/public.css"/>
+<link rel="stylesheet" type="text/css" href="../public/css/style.css"/>
+</head>
+<body class="bgf5f5f5">
+    <header class="themeBgColor"></header>
+    <!--内容-->
+    <div class="theme_title">推荐主题颜色</div>
+    <ul class="theme_list">
+        <li>
+            <div class="stylesp">青翠绿</div>
+            <div class="listco" id="deepgreen" data-color="#009f5d"></div>
+        </li>
+        <li>
+            <div class="stylesp">优格蓝</div>
+            <div class="listco" id="darkblue" data-color="#019fa0"></div>
+        </li>
+        <li>
+            <div class="stylesp">恬静紫</div>
+            <div class="listco" id="deeppurple" data-color="#887ddd"></div>
+        </li>
+        <li>
+            <div class="stylesp">清新绿</div>
+            <div class="listco" id="lightgreen" data-color="#8cc540"></div>
+        </li>
+        <li>
+            <div class="stylesp">典雅黄</div>
+            <div class="listco" id="orange" data-color="#ff8345"></div>
+        </li>
+        <li>
+            <div class="stylesp">烂漫粉</div>
+            <div class="listco" id="pink" data-color="#ff5675"></div>
+        </li>
+    </ul>
+    <div class="theme_title">自定义主题颜色</div>
+    <div class="theme_range"></div>
+    <input type="range" id="r" max="255" min="0" class="theme_range_input"/>
+    <input type="range" id="g" max="255" min="0" class="theme_range_input"/>
+    <input type="range" id="b" max="255" min="0" class="theme_range_input"/>
+    <div class="themesure themeBgColor" id="themesure" data-id ="000">确定</div>
+
+    <script src="../import.js"></script>
+    <script>
+        $("body").themeinit(localStorage.color);//初始化  颜色
+        $("header").header();
+        $("body").footer();
+        //处理 颜色
+        $(".theme_list li").each(function () {
+            var color = $(this).find(".listco").attr("data-color");
+            $(this).find(".listco").css("background-color",color)
+        })
+        var r = 0;
+        var g = 0;
+        var b = 0;
+        var col = "";
+        $(".theme_range").css("background-color","#000")
+        var change = function(input) {
+            /*内容可自行定义*/
+            //console.log(input); 输出的是整个input 节点 ，所以要 获取value，直接input.value 即可
+            var id = input.id;
+            if(id =="r"){
+                r = input.value;
+            }
+            if(id =="g"){
+                g = input.value;
+            }
+            if(id =="b"){
+                b = input.value;
+            }
+            col = 'rgba('+r+','+g+','+b+',1)';
+            //console.log(input.value);
+            //console.log(col);
+            $(".theme_range").css("background-color",col)
+            $("body").themeinit(col);//注意 插件写的是#000格式！ 用rgba 一样 哈哈
+        }
+        $(".theme_range_input").each(function (index) {
+            $(this).RangeSlider({ min: 0,   max: 255,  step: 1,  callback: change});
+        })
+//        $("#themesure").click(function () {
+//            localStorage.color = col;
+//        })
+        wfy.tap("#themesure",function () {
+              console.log(0)
+              localStorage.color = col;
+        })
+//        $("#themesure").tap(function (_this) {
+//            console.log($(_this).attr("data-id"))
+//            console.log("23")
+//        })
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HTML5 - IndexedDB</title>
+</head>
+<body>
+	<div>
+		
+	</div>
+	
+<script>
+var db;  
+var request;
+var transaction;
+var objectStore;//对象仓库
+//1、检测；浏览器支持情况
+window.indexedDB=window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB;
+	if(window.indexedDB){
+		//alert("您的浏览器支持IndexedDB数据库");
+	}else{
+		//alert("您的浏览器不支持IndexedDB数据库");
+	}
+//2、创建或者打开数据库
+function createdb(dbName,n){
+	request=indexedDB.open(dbName,n);//参数为：数据库名和版本号；数据库存在，则打开它；否则创建。
+	console.log(request);
+	/*console.log(request);
+	 *这条指令并不会返回一个DB对象的句柄，我们得到的是一个IDBOpenDBRequest对象，而我们希望得到的DB对象在其result属性中
+	 *除了result，IDBOpenDBRequest接口定义了几个重要属性
+	 *onerror: 请求失败的回调函数句柄
+	 *onsuccess:请求成功的回调函数句柄
+	 *onupgradeneeded:请求数据库版本变化句柄
+	 * 第一次打开数据库时，会先触发upgradeneeded事件，然后触发success事件。
+	 */
+	request.onerror = function (event) {  
+           alert("打开数据库失败:"+event.target.message);  
+    }  
+    request.onsuccess = function (event) {  
+        alert("打开数据库成功!");
+        db=event.target.result;
+        //获得数据库实例对象  或者db= request.result  
+        //db.createObjectStore("table6", {keyPath: "userId",autoIncrement: true});
+        //var  len = db.objectStoreNames.length;                 //对象存储空间名的个数
+        //var  name=db.objectStoreNames[i];                     //对象存储空间名
+        transaction = db.transaction(["table"], "readwrite"); //事务操作的对象存储空间名   //事务模式:'readwrite'可读写模式;READ_ONLY只读模式;VERSION_CHANGE版本升级模式; 
+        objectStore = transaction.objectStore("table");//向info存储空间加入一个info对象，获得request对象用于处理用户对数据库的操作请求(同样拥有onerror，onupgradeneeded，onsuccess事件)
+        /*
+         *选择当前操作的对象空间 
+         * */
+    }   
+    request.onupgradeneeded = function(event) {  
+        alert("版本变化！");  
+        db = event.target.result;
+        if(!db.objectStoreNames.contains("table")) {//判断对象存储空间名称是否已经存在
+            objectStore = db.createObjectStore("table", {keyPath: "id",autoIncrement: true});//创建info对象存储空间;指定keyPath选项为Id（即主键为Id）
+           /* 
+            *db.createObjectStore("table1", {keyPath: "userId",autoIncrement: true});
+            *db.createObjectStore("table2", {keyPath: "userId",autoIncrement: true});
+            *db.createObjectStore("table3", {keyPath: "userId",autoIncrement: true});
+            *db.createObjectStore("table4", {keyPath: "userId",autoIncrement: true});
+            *当然了。你可以一次性的在这里建立多个对象空间！！！！或者每次改变n。和对象空间的名字。之前创建的会存在。
+            * 为什么在onupgradeneeded中创建呢
+            * 原因：当dbName和n这两个参数中的任何一个发生变化。都会执行重新创建一遍对象空间，
+            * 注意：当dbName，保持不变，n只能逐渐增加，假如你这次n=3.那么下次n=2.就会报错 打开数据库失败：
+            * n！=0;
+            * */
+           //创建索引 
+		    objectStore.createIndex("name","name",{ unique: true });
+		    objectStore.createIndex("age","age",{ unique: false });
+		                                               //索引名  
+		                                               //创建索引的列（即keyPath,索引属性字段名）
+	                                                   //索引选项(索引属性值是否唯一:true or false)
+	        }
+            /*注意啊：创建索引 要在创建 对象空间的时候
+             * unique: true  实际效果：这个索引的内容是唯一的。没法出现重复的。。无法创建 两个（索引属性值）相同的内容
+             */
+       
+    }
+}
+
+//3.关闭与删除数据库  这个没意思
+function deletedb(dbName){  
+    try{  
+        request=indexedDB.deleteDatabase(dbName);  //删除数据库使用indexedDB对象的deleteDatabase方法
+        request.onerror = function () {  
+            alert("删除数据库失败:"+event.target.message);  
+        }  
+        request.onsuccess = function (event) {  
+            alert("删除数据库成功!"+dbName);  
+        }   
+    }catch(e){  
+       alert(e.getMessage);  
+    }  
+}
+//实践：不同页面创建的数据库。都会看见！！！所以 测试的时候 删除还点用的；
+//deletedb('testDB');//注意啊  这里要带引号
+//deletedb('user');
+function closedb(db){
+	db.close();
+	//关闭数据库可以直接调用数据库对象的close方法
+}
+//4、插入数据
+function insertdb(db,objectStoreName,argument){//这个是复杂的。第一个参数库名。第二个参数 相当于表名。第三个参数要穿的信息
+	request=indexedDB.open(db);
+	request.onsuccess = function (event) {
+		db=event.target.result;
+		transaction = db.transaction([objectStoreName], "readwrite");  
+	    objectStore = transaction.objectStore(objectStoreName);
+//	    transaction = db.transaction(["table"], "readwrite");  
+//	    objectStore = transaction.objectStore("table");  固定死哪一个表；        
+	    //objectStore.add(argument);  //使用add方法 此方法是异步的 有success和error事件：
+	    var add = objectStore.add(argument)//从新定义add 是为了用onsuccess，objectStore.add(argument);也一样添加
+	    add.onsuccess = function(e){
+	    	alert("添加成功！"); 
+	    }
+	}
+    
+}
+//5、查询数据 get()方法用来读取数据，它的参数是键名
+function getdb(db,objectStoreName,id){
+	request=indexedDB.open(db);
+	request.onsuccess = function (event) {
+		db=event.target.result;
+		transaction = db.transaction([objectStoreName], "readwrite");  
+	    objectStore = transaction.objectStore(objectStoreName);
+	    var getmess = objectStore.get(id);
+	    getmess.onsuccess = function(e){
+	    	var message = e.target.result;
+	    	//alert(JSON.stringify(message))
+	    	alert(message.name);
+	    }
+	}
+}
+//6、更新数据 put()方法用来更新数据，貌似需要和get结合使用
+function putdb(db,objectStoreName,id){
+	request=indexedDB.open(db);
+	request.onsuccess = function (event) {
+		db=event.target.result;
+		transaction = db.transaction([objectStoreName], "readwrite");  
+	    objectStore = transaction.objectStore(objectStoreName);
+	    var getmess = objectStore.get(id);
+	    getmess.onsuccess = function(e){
+	    	var message = e.target.result;//这是数据
+	    	//在这查到数据后 重新赋值 或者 加个 整条信息的参数mes，message = mes 整条替换
+	    	message.name = "李倩";
+	    	objectStore.put(message)//把更换后的数据 更新
+	    }
+	}
+}
+//7、删除数据delete()方法用来删除数据，它的参数是键名  ||调用objectstore的clear方法可以清空objectstore
+function deleteMess(db,objectStoreName,id){
+	request=indexedDB.open(db);
+	request.onsuccess = function (event) {
+		db=event.target.result;
+		transaction = db.transaction([objectStoreName], "readwrite");  
+	    objectStore = transaction.objectStore(objectStoreName);
+	    var deletemess = objectStore.delete(id);
+	    deletemess.onsuccess = function(e){
+	    	alert("删除成功！"); 
+	    }
+	}
+}
+//8、清空数据表中的信息    调用objectstore 用clear方法
+function storeClear(db,objectStoreName){
+	request=indexedDB.open(db);
+	request.onsuccess = function (event) {
+		db=event.target.result;
+		transaction = db.transaction([objectStoreName], "readwrite");  
+	    objectStore = transaction.objectStore(objectStoreName);
+	    objectStore.clear();
+	}
+}
+//9、删除 数据表 数据库实例的deleteObjectStore方法可以删除一个object store，这个就得在onupgradeneeded里面调用了
+//10、利用索引查询
+function searIndex(){
+	request=indexedDB.open('jituan',3);
+	request.onsuccess = function (event) {
+		db=event.target.result;
+		transaction = db.transaction(["table"], "readwrite");  
+	    objectStore = transaction.objectStore("table");
+	    var index = objectStore.index("name");//索引名  这里直接用index 会报错。要先创建索引
+	    var request=index.get('刘大大');//通过 索引值 获取数据
+	    request.onsuccess = function(e){
+	    	var mess=e.target.result;  //查到要找的数据
+	    	alert(JSON.stringify(mess))
+	    }
+	}
+}
+//11、使用游标 查询（查所有   年龄为25 的数据）
+//function openCursor(){
+//	request=indexedDB.open('user',2);
+//	request.onsuccess = function (event) {
+//		db=event.target.result;
+//		transaction = db.transaction(["table"], "readwrite");  
+//	    objectStore = transaction.objectStore("table");
+//	    // 设置索引 （）
+//	    var index = objectStore.index("age");//这里的索引注意 一定是创建数据库的时候存在的！！！！！！
+//	    var ranges =IDBKeyRange.bound("10", "120", false, true); //设置查询条件
+//	    //打开游标 objectStore.openCursor();里边的带查询参数
+//	    var cursor=objectStore.openCursor(ranges);// 条件 放进游标中。
+//	    cursor.onsuccess = function(event){
+//	    	cursorMessage = event.target.result;
+//	    	console.log(cursorMessage);
+//	    	if(cursorMessage){
+//	    		var neirong = cursorMessage.value;
+//	    		console.log(neirong.name)
+//	    		cursor.continue();
+//	    	}
+//	    }
+//	}
+//}
+
+//-------------------------------------------------实验--------------------------------------
+//alert(1);
+//创建个叫集团的数据库 jituan
+//createdb('user',2);
+//deletedb('jituan')
+
+    /*上传案例 用法
+     * var argument ={
+		name:"刘dage",  
+        age:20,  
+        xb:"男"  
+	};
+	insertdb('jituan','table',argument); 
+     * */
+    var argument ={
+		name:"龙王2",  
+        age:20,  
+        xb:"女"  
+	};
+	var mes={name:"李倩",age:"15",xb:"男"}
+    //insertdb('user','table',argument);
+	//getdb('jituan','table',5);
+	//putdb('jituan','table',5); 
+	//deletedb('jituan','table',3); 
+	//storeClear('user','info')
+	//deleteObjectStore('user','info')
+    openCursor();
+</script>
+</body>
+</html>

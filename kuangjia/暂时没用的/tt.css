@@ -1,0 +1,485 @@
+/*
+ *load 转圈 加载 效果  
+ * css3实现的动画效果
+ * 2017.4.10
+ * */
+.loadingBg{position: fixed;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;}
+.loadbox{position: fixed;
+    z-index: 50000;
+    width: 7.6em;
+    min-height: 7.6em;
+    top: 180px;
+    left: 50%;
+    margin-left: -3.8em;
+    background: rgba(40,40,40,.75);
+    text-align: center;
+    border-radius: 5px;
+    color: #fff;    -webkit-transition-duration: .2s;
+    transition-duration: .2s;
+    opacity: 0;
+    -webkit-transform: scale(0.9);
+    transform: scale(0.9);
+    visibility: hidden;
+    margin: 0;
+    left: 7.5%;
+    top: 30%;
+    z-index: 100;left: 50%;
+    top: 35%;
+    margin-left: -3.8em;}
+.loadboxshow{
+    opacity: 1;
+    visibility: visible;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+}
+.weui_loading_leaf {
+    position: absolute;
+    top: -1px;
+    opacity: .25;
+}
+.weui_loading_leaf:before {
+    content: " ";
+    position: absolute;
+    width: 8.14px;
+    height: 3.08px;
+    background: #d1d1d5;
+    box-shadow: 0 0 1px rgba(0,0,0,.0980392);
+    border-radius: 1px;
+    -webkit-transform-origin: left 50% 0;
+    transform-origin: left 50% 0;
+}
+
+.weui_loading {
+    position: absolute;
+    width: 0;
+    z-index: 1;
+    left: 50%;
+    top: 38%;
+}
+
+.weui_loading_leaf_0 {
+    -webkit-animation: opacity-60-25-0-12 1.25s linear infinite;
+    animation: opacity-60-25-0-12 1.25s linear infinite;
+}
+.weui_loading_leaf_0:before {
+    -webkit-transform: rotate(0deg) translate(7.92px, 0px);
+    transform: rotate(0deg) translate(7.92px, 0px);
+}
+.weui_loading_leaf_1 {
+    -webkit-animation: opacity-60-25-1-12 1.25s linear infinite;
+    animation: opacity-60-25-1-12 1.25s linear infinite;
+}
+.weui_loading_leaf_1:before {
+    -webkit-transform: rotate(30deg) translate(7.92px, 0px);
+    transform: rotate(30deg) translate(7.92px, 0px);
+}
+.weui_loading_leaf_2 {
+    -webkit-animation: opacity-60-25-2-12 1.25s linear infinite;
+    animation: opacity-60-25-2-12 1.25s linear infinite;
+}
+.weui_loading_leaf_2:before {
+    -webkit-transform: rotate(60deg) translate(7.92px, 0px);
+    transform: rotate(60deg) translate(7.92px, 0px);
+}
+.weui_loading_leaf_3 {
+    -webkit-animation: opacity-60-25-3-12 1.25s linear infinite;
+    animation: opacity-60-25-3-12 1.25s linear infinite;
+}
+.weui_loading_leaf_3:before {
+    -webkit-transform: rotate(90deg) translate(7.92px, 0px);
+    transform: rotate(90deg) translate(7.92px, 0px);
+}
+.weui_loading_leaf_4 {
+    -webkit-animation: opacity-60-25-4-12 1.25s linear infinite;
+    animation: opacity-60-25-4-12 1.25s linear infinite;
+}
+.weui_loading_leaf_4:before {
+    -webkit-transform: rotate(120deg) translate(7.92px, 0px);
+    transform: rotate(120deg) translate(7.92px, 0px);
+}
+.weui_loading_leaf_5 {
+    -webkit-animation: opacity-60-25-5-12 1.25s linear infinite;
+    animation: opacity-60-25-5-12 1.25s linear infinite;
+}
+.weui_loading_leaf_5:before {
+    -webkit-transform: rotate(150deg) translate(7.92px, 0px);
+    transform: rotate(150deg) translate(7.92px, 0px);
+}
+.weui_loading_leaf_6 {
+    -webkit-animation: opacity-60-25-6-12 1.25s linear infinite;
+    animation: opacity-60-25-6-12 1.25s linear infinite;
+}
+.weui_loading_leaf_6:before {
+    -webkit-transform: rotate(180deg) translate(7.92px, 0px);
+    transform: rotate(180deg) translate(7.92px, 0px);
+}
+.weui_loading_leaf_7 {
+    -webkit-animation: opacity-60-25-7-12 1.25s linear infinite;
+    animation: opacity-60-25-7-12 1.25s linear infinite;
+}
+.weui_loading_leaf_7:before {
+    -webkit-transform: rotate(210deg) translate(7.92px, 0px);
+    transform: rotate(210deg) translate(7.92px, 0px);
+}
+.weui_loading_leaf_8 {
+    -webkit-animation: opacity-60-25-8-12 1.25s linear infinite;
+    animation: opacity-60-25-8-12 1.25s linear infinite;
+}
+.weui_loading_leaf_8:before {
+    -webkit-transform: rotate(240deg) translate(7.92px, 0px);
+    transform: rotate(240deg) translate(7.92px, 0px);
+}
+.weui_loading_leaf_9 {
+    -webkit-animation: opacity-60-25-9-12 1.25s linear infinite;
+    animation: opacity-60-25-9-12 1.25s linear infinite;
+}
+.weui_loading_leaf_9:before {
+    -webkit-transform: rotate(270deg) translate(7.92px, 0px);
+    transform: rotate(270deg) translate(7.92px, 0px);
+}
+.weui_loading_leaf_10 {
+    -webkit-animation: opacity-60-25-10-12 1.25s linear infinite;
+    animation: opacity-60-25-10-12 1.25s linear infinite;
+}
+.weui_loading_leaf_10:before {
+    -webkit-transform: rotate(300deg) translate(7.92px, 0px);
+    transform: rotate(300deg) translate(7.92px, 0px);
+}
+.weui_loading_leaf_11 {
+    -webkit-animation: opacity-60-25-11-12 1.25s linear infinite;
+    animation: opacity-60-25-11-12 1.25s linear infinite;
+}
+.weui_loading_leaf_11:before {
+    -webkit-transform: rotate(330deg) translate(7.92px, 0px);
+    transform: rotate(330deg) translate(7.92px, 0px);
+}
+@-webkit-keyframes opacity-60-25-0-12 {
+    0% {
+        opacity: 0.25;
+    }
+    0.01% {
+        opacity: 0.25;
+    }
+    0.02% {
+        opacity: 1;
+    }
+    60.01% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.25;
+    }
+}
+@-webkit-keyframes opacity-60-25-1-12 {
+    0% {
+        opacity: 0.25;
+    }
+    8.34333% {
+        opacity: 0.25;
+    }
+    8.35333% {
+        opacity: 1;
+    }
+    68.3433% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.25;
+    }
+}
+@-webkit-keyframes opacity-60-25-2-12 {
+    0% {
+        opacity: 0.25;
+    }
+    16.6767% {
+        opacity: 0.25;
+    }
+    16.6867% {
+        opacity: 1;
+    }
+    76.6767% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.25;
+    }
+}
+@-webkit-keyframes opacity-60-25-3-12 {
+    0% {
+        opacity: 0.25;
+    }
+    25.01% {
+        opacity: 0.25;
+    }
+    25.02% {
+        opacity: 1;
+    }
+    85.01% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.25;
+    }
+}
+@-webkit-keyframes opacity-60-25-4-12 {
+    0% {
+        opacity: 0.25;
+    }
+    33.3433% {
+        opacity: 0.25;
+    }
+    33.3533% {
+        opacity: 1;
+    }
+    93.3433% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.25;
+    }
+}
+@-webkit-keyframes opacity-60-25-5-12 {
+    0% {
+        opacity: 0.270958333333333;
+    }
+    41.6767% {
+        opacity: 0.25;
+    }
+    41.6867% {
+        opacity: 1;
+    }
+    1.67667% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.270958333333333;
+    }
+}
+@-webkit-keyframes opacity-60-25-6-12 {
+    0% {
+        opacity: 0.375125;
+    }
+    50.01% {
+        opacity: 0.25;
+    }
+    50.02% {
+        opacity: 1;
+    }
+    10.01% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.375125;
+    }
+}
+@-webkit-keyframes opacity-60-25-7-12 {
+    0% {
+        opacity: 0.479291666666667;
+    }
+    58.3433% {
+        opacity: 0.25;
+    }
+    58.3533% {
+        opacity: 1;
+    }
+    18.3433% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.479291666666667;
+    }
+}
+@-webkit-keyframes opacity-60-25-8-12 {
+    0% {
+        opacity: 0.583458333333333;
+    }
+    66.6767% {
+        opacity: 0.25;
+    }
+    66.6867% {
+        opacity: 1;
+    }
+    26.6767% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.583458333333333;
+    }
+}
+@-webkit-keyframes opacity-60-25-9-12 {
+    0% {
+        opacity: 0.687625;
+    }
+    75.01% {
+        opacity: 0.25;
+    }
+    75.02% {
+        opacity: 1;
+    }
+    35.01% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.687625;
+    }
+}
+@-webkit-keyframes opacity-60-25-10-12 {
+    0% {
+        opacity: 0.791791666666667;
+    }
+    83.3433% {
+        opacity: 0.25;
+    }
+    83.3533% {
+        opacity: 1;
+    }
+    43.3433% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.791791666666667;
+    }
+}
+@-webkit-keyframes opacity-60-25-11-12 {
+    0% {
+        opacity: 0.895958333333333;
+    }
+    91.6767% {
+        opacity: 0.25;
+    }
+    91.6867% {
+        opacity: 1;
+    }
+    51.6767% {
+        opacity: 0.25;
+    }
+    100% {
+        opacity: 0.895958333333333;
+    }
+}
+.weui_toast_content {
+    margin-top: 64%;
+    font-size: 14px;
+}
+/*页面跳转  模拟app效果*/
+/*-------------------------框架切换-------------*/
+
+.x100{transform:translate3d(100%, 0, 0); -webkit-transform:translate3d(100%, 0, 0);}
+.x_100{transform:translate3d(-100%, 0, 0); -webkit-transform:translate3d(-100%, 0, 0);}
+.ts255{transition:400ms; -webkit-transition:400ms;}
+.thd{transform-style:preserve-3d; -webkit-transform-style:preserve-3d; backface-visibility:hidden; -webkit-backface-visibility:hidden; perspective:1000px; -webkit-perspective:1000px;}
+
+
+
+.panel{
+	position: absolute;
+	left: 0;top: 0;
+	width: 100%;height: 100%;
+}
+.page{
+	width: 100%;
+	min-height:100%;
+	overflow: hidden;
+}
+.none{display: none}
+.slideLft100{
+	left:100%;
+	-webkit-animation: left100keyframes 0.4s linear forwards;
+	animation: left100keyframes 0.4s linear forwards;
+}
+@-webkit-keyframes left100keyframes {
+	0% {left: 100%}
+	
+	20% {left: 80%}
+	
+	40% {left: 60%}
+	50% {left: 50%}
+	
+	70% {left: 30%}
+	80% {left: 20%}
+	
+	100%{left: 0%}
+}
+.slideLft10{
+	-webkit-animation: left10keyframes 0.4s linear ;
+	animation: left10keyframes 0.4s linear ;
+}
+@-webkit-keyframes left10keyframes {
+	0% {left: 0%}
+	20% {left: -3%}
+	40% {left: -6%}
+	60% {left: -8%}
+	80% {left: -11%}
+	100%{left: -14%;}
+}
+.goback{-webkit-animation: gobackframes 0.3s linear forwards ;
+	animation: gobackframes 0.3s linear forwards;}
+@-webkit-keyframes gobackframes {
+	0% {left: 0%}
+	20% {left: 20%}
+	40% {left: 40%}
+	60% {left: 60%}
+	80% {left: 80%}
+	100%{left: 100%;}
+}
+/*-------------------------------------框架结束-----------------*/
+
+/**
+ * 
+ *对话框
+ */
+.tt-alertbg{
+	position: fixed;width: 100%;height: 100%;left: 0;top: 0;background: rgba(0,0,0,.6);z-index: 99;opacity: 0;
+	-webkit-transition-duration: .3s;
+	transition-duration: .3s;
+	visibility: hidden;
+}
+.tt-alertbox{
+	position: fixed;
+	z-index: 5000;
+	width: 85%;
+	background-color: #fafafc;
+	text-align: center;
+	border-radius: 3px;
+	overflow: hidden;
+	-webkit-transition-duration: .4s;
+	transition-duration: .4s;
+	opacity: 0;
+	-webkit-transform: scale(0.8);
+	transform: scale(0.8);
+	visibility: hidden;
+	left: 7.5%;
+	top: 30%;
+}
+.dialog_head{line-height: 36px;text-align: center;font-size: 16px;font-weight: 400; color: #000;}
+.dialog_body{padding:10px;line-height: 36px;}
+.dialog_body:nth-child(1){line-height: 20px;color: #000}
+.dialog_body:nth-child(2){padding-top: 0px}
+.dialog_foot{width: 100%;height: 42px;line-height: 42px;position: relative;border-top: 1px solid #d5d5d6; margin-top:5px}
+.dialog_but{color:#f00;width: 50%;float: left}
+.dialog_but:nth-child(2){color: #333}
+.dialog_but_alert{width: 100%}
+.dialog_foot_line{position: relative}
+.dialog_foot_line::after{
+	position: absolute;left: 0;top: 0; height: 42px;width: 1px;content: '';background-color: #d5d5d6;
+}
+.dialog_input{    padding: 4px 6px;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+	height: 36px;
+	width: 90%;
+	outline: 0;
+	-webkit-appearance: none;
+	background-color: transparent;
+	font-size: inherit;
+	color: inherit;}
+.showdialog{opacity: 1;visibility: visible;}
+.showdialogbox{        opacity: 1;
+	visibility: visible;
+	-webkit-transform: scale(1);
+	transform: scale(1);}

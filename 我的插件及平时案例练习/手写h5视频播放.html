@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="css/video.css"/>
+<title></title>
+</head>
+<script type="text/javascript" src="http://www.xipwang.cn/js/jquery.min.js"></script>
+<body onselectstart="return false">
+	<div class="content-box">
+		<div id="videoObject">
+			<video id="videoView" class="videoView" src="" autoplay="autoplay" oncontextmenu="return false;"></video>
+			<!--加载动画-->
+			<div id="pdq-load-wrap" class="pdq-load-wrap">
+				<ul id="pdq-loading-list" class="pdq-loading-list">
+					<i></i>
+					<i></i>
+					<i></i>
+					<i></i>
+					<i></i>
+					<ul>
+			</div>
+			<!--控制器 S-->
+			<div id="pdq-controll-wrap" class="pdq-controll-wrap vhidden">
+				<div id="pdq-progressBar" class="pdq-progressBar">
+					<div id="pdq-progress-hidebox" class="pdq-progress-hidebox">
+						<div id="pdq-progress-mouse-bar" class="pdq-progress-mouse-bar"></div>
+						<div id="pdq-slider-button" class="pdq-slider-button"></div>
+						<div id="pdq-progress-bgh" class="pdq-progress-bgh"></div>
+						<div id="pdq-progress-buff" class="pdq-progress-buff"></div>
+						<span id="pdq-progress-timeShow" class="pdq-progress-timeShow">00:00</span>
+					</div>
+					<div id="pdq-progress-bgs" class="pdq-progress-bgs"></div>
+				</div>
+				<!--视频进度条-->
+				<div id="pdq-plago" class="pdq-plago"></div>
+				<!--暂停/播放-->
+				<div id="pdq-play-timer" class="pdq-play-timer">
+					<span id="pqd-nowTime" class="pqd-nowTime">00:00</span>
+					<span id="pdq-allTime" class="pdq-allTime">00:00</span>
+				</div>
+				<!--视频时间-->
+				<div id="pdq-play-volume" class="pdq-play-volume">
+					<div id="pdq-play-icon" class="pdq-play-icon"></div>
+					<div id="pdq-volume-scroll" class="pdq-volume-scroll">
+						<div id="vloume-roud" class="vloume-roud"></div>
+						<div id="vloume-roud-bg" class="vloume-roud-bg"></div>
+						<div id="vloume-roud-slider" class="vloume-roud-slider"></div>
+					</div>
+				</div>
+				<!--视频音量-->
+				<div id="pdq-play-fullscreen" class="pdq-play-fullscreen"></div>
+				<!--全屏按钮-->
+				<div id="pdq-playback-rate" class="pdq-playback-rate">
+					<ul id="pdq-playback-list" class="pdq-playback-list">
+						<li>1.0x</li>
+						<li>2.0x</li>
+						<li>3.0x</li>
+						<li>4.0x</li>
+					</ul>
+					<div id="pdq-playback-text" class="pdq-playback-text">1.0x</div>
+				</div>
+				<!--视频菜单-->
+				<div id="pdq-play-menulist" class="pdq-play-menulist">
+					<ul id="pdq-course-list" class="pdq-course-list">
+						<li>高清</li>
+						<li>标清</li>
+						<li>流畅</li>
+					</ul>
+					<div id="pqd-menu-text" class="pqd-menu-text">标清</div>
+				</div>
+				<!--视频类型-->
+				<div id="pdq-play-course-type" class="pdq-play-course-type">
+					<ul id="pdq-playlist" class="pdq-playlist">
+						<li>重点</li>
+						<li>难点</li>
+						<li>复习</li>
+						<li>全部</li>
+					</ul>
+					<div id="pdq-type-text" class="pdq-type-text">全部</div>
+				</div>
+				<!--视频播放倍数-->
+			</div>
+			<div id="pdq-right-pause" class="pdq-right-pause"></div>
+		</div>
+	</div>
+
+<script type="text/javascript">
+	(function ($, win, doc, undefined) {
+			var ControllDom = {
+				controlls: $("#pdq-controll-wrap"),
+				playbtn: $("#pdq-plago"),    		     //播放按钮
+				progressBar: $("#pdq-progressBar"),      //进度条
+				timer: $("#pdq-play-timer"),	 	     //时间显示		
+				volumeBox: $("#pdq-play-volume"),	     //音量滑块
+				courseType: $("#pdq-play-course-type"),  //视频类型
+				courseMenu: $("#pdq-play-menulist"),     //视频菜单
+				playTimesbox: $("#pdq-playback-rate"),   //播放倍数
+				fullScreenBtn: $("#pdq-play-fullscreen"), //全屏按钮 
+				loading: $("#pdq-load-wrap"),
+				pausedBtn: $("#pdq-right-pause")
+			};
+			function XPVideoPlay(videoObject, option) {
+				this.videoObject = videoObject[0]; 	    	  //video对象			
+				this.volume = option.volume || "50%";  		  //初始化音量大小
+				this.type = option.type || "流畅";      		//视频清晰度初始化
+				this.Rate = option.rate || 1
+				this.positionPlay = option.positionPlay || 0; //视频初始化位置
+				this.watermarkName = option.watermarkName || "";
+				this.videoUrl = option.videoUrl || null;
+				this.watermarTime = option.watermarTime || 100000;
+				this.arrVideoLink;                     		  //用于存储视频路径
+				this.overPlay = false;
+				this.init();
+			}
+			XPVideoPlay.prototype = {
+				//初始化入口
+				init: function () {
+					var _this = this;
+					this.getResVideo();
+					$(_this).on("application", _this.appVideo);
+				},
+				//获取视频资源
+				getResVideo: function () {
+					var _this = this;
+					$.post(_this.videoUrl, null, function (result) {
+						_this.arrVideoLink = result;
+						$(_this).trigger("application");
+					}, "JSON");
+				},
+				//功能入口
+				appVideo: function () {
+					var _this = this;
+					_this.initUploume(_this.volume);			    //初始化音量大小				
+					_this.playVideo();							    //播放/暂停					
+					_this.videotype(_this.type, _this.positionPlay, _this.Rate); //切换视频清晰度					
+					_this.videoPlayGo(); 	 						//开始播放								
+					_this.Videoswitch(); 	 						//手动切换视频类型				
+					_this.fullScreen();   						    //全屏按钮
+					_this.volumeControl();	 						//音量控制
+					_this.updatePlaybar();	 						//更新视频进度
+					_this.playTimes();	  	 						//播放倍数
+				},
+				//暂停/播放
+				playVideo: function () {
+					var _this = this;
+					$(_this.videoObject).on("click", function () {
+						ControllDom.playbtn.click();
+					});
+					ControllDom.pausedBtn.click(function () {
+						ControllDom.playbtn.click();
+					});
+					ControllDom.playbtn.on("click", function () {
+						var $this = $(this);
+						if (_this.videoObject.paused) {
+							$this.removeClass("stop");
+							ControllDom.controlls.addClass('vhidden');
+							_this.videoObject.play(); //播放
+							ControllDom.pausedBtn.hide();
+							if (_this.overPlay) {//当重新播放时再次启用水印								
+								_this.overPlay = false;
+								_this.watermark().createMark();	//启用水印		
+							}
+						} else {
+							_this.videoObject.pause(); //暂停	
+							$this.addClass("stop");
+							ControllDom.pausedBtn.show();
+						}
+					});
+				},
+				//倍数播放
+				playTimes: function () {
+					var _this = this;
+					var ulBox = ControllDom.playTimesbox.find('ul')
+					var timeArr = ulBox.children();
+					var valuetime = ControllDom.playTimesbox.find('#pdq-playback-text');
+					timeArr.click(function () {
+						var $this = $(this);
+						var multiple = parseInt($this.text());
+						valuetime.text($(this).text());
+						$this.parent().hide();
+						_this.videoObject.playbackRate = multiple;
+					});
+
+					_this.upMenu(valuetime, ulBox);
+				},
+				//音量控制
+				volumeControl: function () {
+					var _this = this;
+					var isVolume = false;
+					var mutebtn = ControllDom.volumeBox.find("#pdq-play-icon");
+					var Round = ControllDom.volumeBox.find("#vloume-roud");
+					var volumeBg = ControllDom.volumeBox.find("#vloume-roud-bg");
+					var volumeSli = ControllDom.volumeBox.find("#vloume-roud-slider");
+					//静音切换
+					mutebtn.click(function () {
+						var $this = $(this);
+						if ($this.hasClass("mute")) {
+							if (_this.volume < 10) {
+								_this.initUploume("20%");
+							} else {
+								_this.initUploume(_this.volume);
+							}
+						} else {
+							_this.initUploume(0);
+						}
+					});
+					volumeSli.mousedown(function (e) {
+						var e = e || event;
+						upVloume(e);
+					});
+					//拖到圆球控制音量
+					Round.mousedown(function (e) {
+						isVolume = true;
+					})
+					volumeSli.mousemove(function (e) {
+						var e = e || event;
+						if (isVolume) {
+							upVloume(e);
+						}
+					})
+					$(document).mouseup(function () {
+						isVolume = false;
+					})
+					//更新音量大小
+					function upVloume(e) {
+						var volumeWidth = volumeSli.width();
+						var upWidth = e.pageX - $(e.target).offset().left;
+						Round.css({ left: (upWidth / volumeWidth) * 100 + "%" })
+						volumeBg.width((upWidth / volumeWidth) * 100 + "%");
+						//记录当前音量更新位置
+						_this.volume = (upWidth / volumeWidth) * 100;
+						try {
+							_this.videoObject.volume = upWidth / volumeWidth;
+						} catch (err) {
+							console.log(err)
+						}
+						_this.initUploume(_this.volume);
+					}
+				},
+				//初始化音量大小
+				initUploume: function (value) {
+					var _this = this;
+					var mutebtn = ControllDom.volumeBox.find("#pdq-play-icon")
+					var Round = ControllDom.volumeBox.find("#vloume-roud");
+					var volumeBg = ControllDom.volumeBox.find("#vloume-roud-bg");
+					if (value < 4) {
+						mutebtn.addClass("mute");
+					} else if (parseInt(value) * 100 > 0) {
+						mutebtn.removeClass("mute");
+					}
+					Round.stop().animate({ left: value }, 200);
+					volumeBg.stop().animate({ width: value }, 200);
+					_this.videoObject.volume = parseInt(value) / 100;
+				},
+				//更新播放进度
+				updatePlaybar: function () {
+					var _this = this;
+					var sliderBox = ControllDom.progressBar.find("#pdq-progress-hidebox");
+					var sliderBar1 = sliderBox.find("#pdq-progress-bgh");
+					var sliderBar2 = sliderBox.find("#pdq-progress-bgs");
+					var sliderbtn = sliderBox.find("#pdq-slider-button");
+					var mousebar = sliderBox.find("#pdq-progress-mouse-bar");
+					var showBar = sliderBox.find("#pdq-progress-bgs");
+					var timeShow = sliderBox.find("#pdq-progress-timeShow");
+					//更新视频进度					
+					function sliderProgress() {
+						var offsetX = 0;
+						var isMove = false;
+						var moveX = 0;
+						//进度条任意点进行更新
+						mousebar.mousedown(function (e) {
+							updataprogress(e.pageX - $(this).offset().left);
+							_this.videoObject.play();
+							ControllDom.playbtn.removeClass("stop");
+						});
+						//当按下圆球
+						sliderbtn.mousedown(function (evente) {
+							isMove = true;
+							offsetX = event.pageX - $(this).position().left;
+						});
+						//鼠标经过进度条展现锚点时间
+						mousebar.mousemove(function (event) {
+							var maxWidth = sliderBox.width();
+							var nowX = event.pageX - $(event.target).offset().left;
+							var timeShowWith = timeShow.outerWidth();
+							//计算当前鼠标经过的时间段 = 总时长*(当前偏移量/进度条最大长度)
+							var nowTime = _this.timeFormat(_this.videoObject.duration * (nowX / maxWidth));
+							timeShow.css({ left: nowX / maxWidth * 100 + "%" }).text(nowTime).css({ marginLeft: -timeShowWith / 2 });
+							//锚点时间展现不能超出播放器大小
+							if (nowX >= (maxWidth - timeShowWith / 2)) {
+								timeShow.css({ left: maxWidth - timeShowWith / 2 });
+							} else if (nowX <= timeShowWith / 2) {
+								timeShow.css({ left: timeShowWith / 2 });
+							}
+						});
+
+						//开始滑动	
+						$(doc).mousemove(function (event) {
+							var sliderbtnLeft = sliderbtn.position().left;
+							//判断是否执行更新进度
+							if (isMove) {
+								//获取鼠标实际移动的X轴距离
+								var moveX = event.pageX - offsetX;
+								if (sliderbtnLeft <= sliderbtn.width()) {
+									moveX = sliderbtn.width();
+									isMove = true;
+								} else if (sliderbtnLeft > sliderbtn.parent().width() - sliderbtn.width()) {
+									moveX = sliderbtn.parent().width();
+									//如果拖到距离大于进度条的最大长度将拖动状态取消
+									isMove = false;
+									return false;
+								}
+								//更新视频进度
+								updataprogress(moveX);
+								return false;
+							}
+
+							//当鼠标抬起	
+						}).mouseup(function () {
+							isMove = false;
+						});
+						function updataprogress(x) {
+							var maxduration = _this.videoObject.duration;
+							var maxWidth = sliderBox.width();
+							var changeoren = x / maxWidth * 100;
+							if (changeoren > 100) {
+								changeoren = 100;
+							} else if (changeoren < 0) {
+								changeoren = 0;
+							}
+							sliderbtn.css({ left: changeoren + '%' });
+							sliderBar1.width(changeoren + '%');
+							sliderBar2.width(changeoren + "%");
+							_this.videoObject.currentTime = maxduration * changeoren / 100;
+							return false;
+						}
+					}
+					sliderProgress();
+				},
+				//初始化视频类型
+				videotype: function (type, timer, rate) {
+					var _this = this;
+					_this.arrVideoLink;
+					switch (type) {
+						case "流畅":
+							$(_this.videoObject).attr("src", _this.arrVideoLink.source[0].LD);//流畅								
+							break;
+						case "标清":
+							$(_this.videoObject).attr("src", _this.arrVideoLink.source[1].HD);//标清
+							break;
+						case "高清":
+							$(_this.videoObject).attr("src", _this.arrVideoLink.source[2].SD);//高清						
+							break;
+					}
+					_this.videoObject.currentTime = timer;
+					_this.videoObject.playbackRate = rate;
+				},
+				//视频切换
+				Videoswitch: function () {
+					var _this = this;
+					var menuParent = ControllDom.courseMenu;
+					var MenuBox = menuParent.find("ul")
+					var listMenu = MenuBox.children();
+					var valueType = menuParent.find('#pqd-menu-text');
+					listMenu.click(function () {
+						nowTime = _this.videoObject.currentTime;
+						nowRate = _this.videoObject.playbackRate
+						var texType = $(this).text();
+						valueType.text(texType);
+						$(this).parent().hide();
+						//切换视频&类型&进度&速率
+						_this.videotype(texType, nowTime, nowRate);
+					});
+					_this.upMenu(valueType, MenuBox);
+				},
+				//开始播放
+				videoPlayGo: function () {
+					var _this = this;
+					var nowTime = 0;  //当前播放位置
+					var AllTime = 0;  //视频时长
+					var timebox = _this.timer;
+					var nowSpan = ControllDom.timer.find("#pqd-nowTime");
+					var allSpan = ControllDom.timer.find("#pdq-allTime");
+					_this.watermark(true).createMark();	//启用水印	
+					//当浏览器已加载音频/视频的元数据时
+					$(_this.videoObject).on("loadedmetadata", function (e) {
+						AllTime = _this.videoObject.duration
+						allSpan.text(_this.timeFormat(_this.videoObject.duration));
+
+					});
+					//当视频播放结束
+					$(_this.videoObject).on("ended", function () {
+						ControllDom.playbtn.addClass("stop");
+						_this.overPlay = true;
+					});
+					//当目前的播放位置已更改时
+					$(_this.videoObject).on('timeupdate', function (e) {
+						var nowTime = _this.videoObject.currentTime;
+						nowSpan.text(_this.timeFormat(_this.videoObject.currentTime));
+						ControllDom.progressBar.find("#pdq-progress-bgs").width((nowTime / AllTime) * 100 + "%");
+						ControllDom.progressBar.find("#pdq-progress-bgh").width((nowTime / AllTime) * 100 + "%");
+						ControllDom.progressBar.find("#pdq-slider-button").css({ left: (nowTime / AllTime) * 100 + "%" });
+						ControllDom.progressBar.find("#pdq-progress-buff").width(_this.videoObject.buffered.end(0) / AllTime * 100 + "%");
+					});
+					//当视频已开始播放时
+					$(_this.videoObject).on("playing", function () {
+						ControllDom.loading.hide();
+					});
+					//当视频已停止播放但打算继续播放时
+					$(_this.videoObject).on("waiting", function () {
+						ControllDom.loading.show();
+					});
+					//当文件就绪可以开始播放时运行的脚本（缓冲已足够开始时）
+					$(_this.videoObject).on("canplay", function () {
+						ControllDom.loading.hide();
+					});
+
+				},
+				//时间格式化
+				timeFormat: function (value) {
+					var time;
+					if (value > -1) {
+						var h = Math.floor(value / 3600) > 10 ? Math.floor(value / 3600) : Math.floor(value / 3600) == 0 ? "" : "0" + Math.floor(value / 3600);
+						var m = Math.floor(value / 60) % 60 > 10 ? Math.floor(value / 60) % 60 : "0" + Math.floor(value / 60) % 60;
+						var s = value % 60 > 10 ? Math.floor(value % 60) : "0" + Math.floor(value % 60);
+						time = (h == 0 ? "" : h + ":") + m + ":" + s;
+					}
+					return time;
+				},
+				//水印
+				watermark: function () {
+					var _this = this;
+					var moveWith = $(_this.videoObject).width();
+					var canvas = document.createElement('canvas');
+					var context = canvas.getContext('2d');
+					var PlayMark = {
+						font: "14px microsoft yahei",
+						style: "#fff",
+						text: _this.watermarkName,
+						clearMark: function () {
+							clearTimeout(window.mk);
+						},
+						createMark: function () {
+							var offset = 0;
+							var overmark = false;
+							var $this = this;
+							canvas.style.zIndex = 21474836478;
+							canvas.style.left = 0;
+							canvas.width = 200;
+							canvas.height = 25;
+							canvas.style.top = 20 + "px"
+							canvas.style.position = "absolute";
+							context.fillStyle = PlayMark.style;
+							context.font = PlayMark.font;
+							context.fillText(PlayMark.text, 10, 20);
+							_this.videoObject.parentNode.insertBefore(canvas, null);
+							window.mk = setInterval(function () {
+								offset += 10;
+								canvas.style.left = offset + "px";
+								var left = canvas.style.left;
+								if (parseInt(left) > moveWith) {
+									clearInterval(window.mk);
+									_this.videoObject.parentNode.removeChild(canvas);
+									timeMark = setTimeout(PlayMark.createMark, _this.watermarTime);
+									if (_this.overPlay) { //判断视频是否播放完毕												
+										clearTimeout(timeMark);
+									}
+								}
+							}, 100);
+						}
+					}
+					return PlayMark;
+				},
+				//全屏
+				fullScreen: function () {
+					var _this = this;
+					var $this = null;
+					var isFullScreen = false;
+					var videos = document.getElementById("videoObject")
+					ControllDom.fullScreenBtn.click(function () {
+						$this = $(this);
+						if ($(this).hasClass('cancleScreen')) {
+							if (doc.exitFullscreen) {
+								doc.exitFullscreen();
+							} else if (doc.mozCancelFullScreen) {
+								doc.mozCancelFullScreen();
+							} else if (doc.webkitExitFullscreen) {
+								doc.webkitExitFullscreen();
+							}
+						} else {
+							if (_this.videoObject.requestFullscreen) {
+								_this.videoObject.requestFullscreen();
+							} else if ($("#videoObject")[0].mozRequestFullScreen) {
+								// 火狐好像不允许同级元素全屏坑点在这里直接把父级全屏
+								$("#videoObject")[0].mozRequestFullScreen();
+							} else if (_this.videoObject.webkitRequestFullscreen) {
+								_this.videoObject.webkitRequestFullscreen();
+
+							} else if (_this.videoObject.msRequestFullscreen) {
+								_this.videoObject.msRequestFullscreen();
+							}
+						}
+					});
+					//浏览器全屏无法监听到ESC键盘事件试了好几种方法还是有个别浏览器没有不能兼容					
+					win.onresize = function () {
+						//当浏览器窗口发生变化时判断此时全屏按钮状态来改变样式
+						if (ControllDom.fullScreenBtn.hasClass("cancleScreen")) {
+							ControllDom.fullScreenBtn.removeClass('cancleScreen');
+						} else {
+							ControllDom.fullScreenBtn.addClass('cancleScreen');
+						}
+						if (!checkFull()) {
+							ControllDom.fullScreenBtn.removeClass('cancleScreen');
+						}
+					}
+					function checkFull() {
+						var isFull = doc.fullscreenElement ||
+							doc.mozFullScreenElement ||
+							doc.webkitFullscreenElement ||
+							doc.msFullscreenEnabled ||
+							doc.fullscreenEnabled ||
+							doc.webkitIsFullScreen;
+						if (isFull === undefined) isFull = false;
+						return isFull;
+					}
+				},
+				//菜单显示隐藏
+				upMenu: function (menuEl, menuBox) {
+					function Upmenu(menuEl, menuBox) {
+						this.time = null;
+						this.Menuname = menuEl;
+						this.Menuconten = menuBox;
+						this.init = function () {
+							this.hoverBtn();
+							this.hoverConten();
+						};
+						return this.init();
+					}
+					Upmenu.prototype = {
+						constructor: Upmenu,
+						ShowContent: function (index) {
+							this.Menuconten.stop().show(0);
+						},
+						HedeContent: function (that) {
+							this.Menuconten.stop().hide(0, function () {
+								that.removeClass("oen")
+							});
+						},
+						hoverBtn: function () {
+							var self = this
+							this.Menuname.hover(function () {
+								$(this).addClass("active")
+								self.ShowContent()
+							}, function () {
+								var $this = $(this);
+								self.time = setTimeout(function () {
+									self.HedeContent($this);
+									self.Menuname.removeClass("active");
+								}, 200);
+							});
+						},
+						hoverConten: function () {
+							var self = this
+							self.Menuconten.hover(function () {
+								clearTimeout(self.time)
+							}, function () {
+								$(this).hide()
+								self.Menuname.removeClass("active")
+							});
+						},
+					}
+					return new Upmenu(menuEl, menuBox);
+				},
+			}
+			window.XPVideoPlay = XPVideoPlay;
+		})(jQuery, window, document);
+		new XPVideoPlay($("#videoView"), {
+			videoUrl: "http://cloud.video.taobao.com/play/u/2712925557/p/1/e/6/t/1/40050769.mp4",//视频数据
+			volume: "50%", 					  // 初始化音量大小
+			positionPlay: 0, 				  //初始化播放位置秒为单位;
+			watermarkName: "H5自制视频播放器", // 水印文字
+			watermarTime: 100000               //水印每隔多久出现一次
+		});
+</script>
+</body>
+</html>

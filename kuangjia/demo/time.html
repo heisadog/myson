@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>时间函数检测</title>
+<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta content="telephone=no" name="format-detection"/>
+<link rel="stylesheet" type="text/css" href="../public/css/reset.css"/>
+<link rel="stylesheet" type="text/css" href="../public/css/public.css"/>
+<link rel="stylesheet" type="text/css" href="../public/css/style.css"/>
+</head>
+<body class="bgf5f5f5">
+    <header class="themeBgColor"></header>
+    <!--内容-->
+    <div class="theme_title" id="time">获取当前时间 <span id="times"></span></div>
+    <div class="theme_title" id="riqi">获取当前时间(时间对象原型扩展)<span id="ti"></span></div>
+    <div class="themesure themeBgColor" id="themesure" data-id ="000">确定</div>
+
+    <script src="../import.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        $("body").themeinit(localStorage.color);//初始化  颜色
+        $("header").header();
+        $("body").footer();
+        wfy.tap("#time",function () {
+            $("#times").html(wfy.format('yyyy-MM-dd'));
+        })
+        wfy.tap("#riqi",function () {
+            $("#ti").html(new Date().format("yyyy-MM-dd"));
+            wfy.goto("theme","2000")
+        })
+        weather(function (ss) {
+            console.log(ss)
+        })
+        console.log(wfy.setTwoNum(20.6525,3))
+        wfy.showload()
+        //wfy.showload("小富正在加紧给您紧急加载数据");
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

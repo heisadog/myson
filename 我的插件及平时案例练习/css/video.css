@@ -1,0 +1,514 @@
+	* {
+		margin: 0;
+		padding: 0;
+	}
+	
+	video::-webkit-media-controls-enclosure {
+		/*禁用播放器控制栏的样式*/
+		display: none !important;
+	}
+	
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	
+	.content-box {
+		width: 800px;
+		height: 450px;
+		background: #ede;
+		margin: 40px auto
+	}
+	
+	#videoObject {
+		width: 100% !important;
+		height: 100% !important;
+		display: block;
+		box-sizing: border-box;
+		color: #fff;
+		background-color: #000;
+		position: relative;
+		padding: 0;
+		vertical-align: top;
+		overflow: hidden;
+	}
+	
+	.videoView {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		padding-bottom: 50px;
+		box-sizing: inherit;
+	}
+	
+	.pdq-controll-wrap {
+		height: 50px;
+		background: #070c11;
+		position: absolute;
+		z-index: 21474836471;
+		bottom: 0px;
+		left: 0;
+		width: 100%;
+		visibility: visible;
+		display: block!important
+	}
+	/*进度条*/
+	
+	.pdq-controll-wrap .pdq-progressBar {
+		width: 100%;
+		height: 2px;
+		background: #666;
+		position: absolute;
+		top: 0;
+	}
+	
+	.pdq-controll-wrap .pdq-progressBar .pdq-progress-bgs {
+		width: 0;
+		height: 2px;
+		position: absolute;
+		background: #f01616;
+		left: 0;
+		top: 0;
+	}
+	
+	.pdq-controll-wrap .pdq-progressBar .pdq-progress-hidebox {
+		width: 100%;
+		height: 8px;
+		position: relative;
+		background: #070c11;
+		left: 0;
+		top: -6px;
+		display: none;
+		z-index: 3;
+	}
+	
+	.pdq-controll-wrap .pdq-progressBar .pdq-progress-hidebox .pdq-progress-timeShow {
+		position: absolute;
+		display: block;
+		top: -30px;
+		color: #fff;
+		background: #070c11;
+		font-family: "微软雅黑";
+		font-size: 14px;
+		display: none;
+		padding: 2px 5px;
+	}
+	
+	.pdq-controll-wrap .pdq-progressBar .pdq-progress-hidebox:hover .pdq-progress-timeShow {
+		display: block;
+	}
+	
+	.pdq-controll-wrap .pdq-progressBar .pdq-progress-hidebox .pdq-progress-buff {
+		background: #393e42;
+		height: 8px;
+		z-index: 1;
+	}
+	
+	.pdq-controll-wrap .pdq-progressBar .pdq-progress-hidebox .pdq-progress-mouse-bar {
+		width: 100%;
+		height: 15px;
+		position: absolute;
+		left: 0;
+		top: -5px;
+		z-index: 1;
+	}
+	
+	.pdq-controll-wrap:hover .pdq-progress-hidebox {
+		display: block;
+		cursor: pointer
+	}
+	
+	.pdq-controll-wrap .pdq-progressBar .pdq-progress-hidebox .pdq-progress-bgh {
+		width: 0;
+		height: 8px;
+		position: absolute;
+		background: #f01616;
+		left: 0;
+		top: 0
+	}
+	
+	.pdq-controll-wrap .pdq-progressBar .pdq-progress-hidebox .pdq-slider-button {
+		width: 12px;
+		;
+		height: 12px;
+		position: absolute;
+		background: #fff;
+		left: 0px;
+		margin-left: -10px;
+		top: -2px;
+		border-radius: 50%;
+		cursor: pointer;
+		z-index: 10;
+	}
+	
+	.pdq-controll-wrap .pdq-progressBar .pdq-progress-hidebox .pdq-slider-button:active {
+		background: #666
+	}
+	/*播放按钮*/
+	
+	.pdq-controll-wrap .pdq-plago {
+		width: 40px;
+		height: 40px;
+		float: left;
+		cursor: pointer;
+		margin-top: 6px;
+		margin-left: 4px;
+		background: url(../images/play.png) no-repeat center;
+	}
+	
+	.pdq-controll-wrap .pdq-plago.stop {
+		background: url(../images/stop.png) no-repeat center;
+	}
+	/*视频时间*/
+	
+	.pdq-controll-wrap .pdq-play-timer {
+		float: left;
+		color: #fff;
+		margin-top: 15px;
+		width: 120px;
+		text-align: center;
+		font-size: 14px;
+		font-family: "微软雅黑"
+	}
+	/*音量样式*/
+	
+	.pdq-controll-wrap .pdq-play-volume {
+		width: 150px;
+		height: 40px;
+		float: left;
+		margin-top: 12px;
+		margin-left: 15px;
+	}
+	
+	.pdq-controll-wrap .pdq-play-volume .pdq-play-icon {
+		width: 30px;
+		height: 30px;
+		background: url(../images/sound.png) no-repeat center;
+		float: left;
+		cursor: pointer;
+	}
+	
+	.pdq-controll-wrap .pdq-play-volume .pdq-play-icon.mute {
+		background: url(../images/mute.png) no-repeat center;
+	}
+	
+	.pdq-controll-wrap .pdq-play-volume .pdq-volume-scroll {
+		width: 100px;
+		height: 3px;
+		background: #43474b;
+		float: left;
+		margin-top: 14px;
+		margin-left: 4px;
+		position: relative;
+	}
+	
+	.pdq-controll-wrap .pdq-play-volume .pdq-volume-scroll .vloume-roud {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: #93999f;
+		position: absolute;
+		left: 0px;
+		top: -4px;
+		cursor: pointer;
+		z-index: 3;
+		margin-left: -5px;
+		border: 1px solid #93999f;
+	}
+	
+	.pdq-controll-wrap .pdq-play-volume .pdq-volume-scroll .vloume-roud-bg {
+		width: 0px;
+		height: 3px;
+		border-radius: 2px;
+		background: #f00;
+		position: relative;
+	}
+	
+	.pdq-controll-wrap .pdq-play-volume .pdq-volume-scroll .vloume-roud-slider {
+		width: 100%;
+		height: 30px;
+		border-radius: 2px;
+		position: absolute;
+		cursor: pointer;
+		z-index: 2;
+		left: 0;
+		top: -12px;
+	}
+	/*视频类型*/
+	
+	.pdq-controll-wrap .pdq-play-course-type {
+		float: right;
+		margin-right: 20px;
+		font-size: 12px;
+		height: 40px;
+		width: 80px;
+		margin-top: 6px;
+		color: #fff;
+		font-family: "微软雅黑";
+		position: relative;
+	}
+	
+	.pdq-controll-wrap .pdq-play-course-type .pdq-type-text {
+		text-align: center;
+		line-height: 40px;
+		cursor: pointer;
+	}
+	
+	.pdq-controll-wrap .pdq-play-course-type .pdq-playlist {
+		position: absolute;
+		bottom: 40px;
+		left: 0;
+		z-index: 4;
+		display: none;
+	}
+	
+	.pdq-controll-wrap .pdq-play-course-type .pdq-playlist li {
+		padding: 8px 2px;
+		color: #fff;
+		width: 80px;
+		text-align: center;
+		cursor: pointer;
+		font-size: 12px;
+		background: #070c11;
+	}
+	
+	.pdq-controll-wrap .pdq-play-course-type .pdq-playlist li:hover {
+		background: #1f2429;
+		color: #f01616
+	}
+	/*视频高标清*/
+	
+	.pdq-controll-wrap .pdq-play-menulist {
+		float: right;
+		margin-right: 20px;
+		font-size: 14px;
+		height: 40px;
+		width: 80px;
+		margin-top: 6px;
+		color: #fff;
+		font-family: "微软雅黑";
+		position: relative;
+	}
+	
+	.pdq-controll-wrap .pdq-play-menulist .pdq-course-list {
+		position: absolute;
+		bottom: 40px;
+		left: 0;
+		width: 80px;
+		z-index: 4;
+		display: none;
+	}
+	
+	.pdq-controll-wrap .pdq-play-menulist .pdq-course-list li {
+		padding: 8px 0px;
+		color: #fff;
+		width: 80px;
+		text-align: center;
+		cursor: pointer;
+		font-size: 12px;
+		background: #070c11;
+	}
+	
+	.pdq-controll-wrap .pdq-play-menulist .pdq-course-list li:hover {
+		background: #1f2429;
+		color: #f01616
+	}
+	
+	.pdq-controll-wrap .pdq-play-menulist .pqd-menu-text {
+		text-align: center;
+		line-height: 40px;
+		cursor: pointer;
+		font-size: 12px;
+		width: 80px;
+	}
+	
+	.pdq-controll-wrap .pdq-play-menulist .pqd-menu-text.active {
+		color: #f01616;
+		background: #1f2429
+	}
+	/*全屏按钮*/
+	
+	.pdq-play-fullscreen {
+		width: 40px;
+		height: 40px;
+		background: url(../images/fullScreen.png) no-repeat center;
+		float: right;
+		cursor: pointer;
+		margin-top: 6px;
+	}
+	
+	.pdq-play-fullscreen.cancleScreen {
+		background: url(../images/smallScreen.png) no-repeat center;
+	}
+	/*视频播放倍数*/
+	
+	.pdq-controll-wrap .pdq-playback-rate {
+		float: right;
+		margin-right: 20px;
+		height: 40px;
+		width: 80px;
+		margin-top: 6px;
+		color: #ccc;
+		position: relative;
+		font-size: 14px;
+		font-family: "微软雅黑"
+	}
+	
+	.pdq-controll-wrap .pdq-playback-rate .pdq-playback-list {
+		position: absolute;
+		bottom: 40px;
+		left: 0;
+		z-index: 4;
+		display: none
+	}
+	
+	.pdq-controll-wrap .pdq-playback-rate .pdq-playback-list li {
+		padding: 8px 0px;
+		color: #fff;
+		width: 80px;
+		text-align: center;
+		cursor: pointer;
+		font-size: 12px;
+		background: #070c11;
+	}
+	
+	.pdq-controll-wrap .pdq-playback-rate .pdq-playback-list li:hover {
+		background: #1f2429;
+		color: #f01616
+	}
+	
+	.pdq-controll-wrap .pdq-playback-rate .pdq-playback-text {
+		text-align: center;
+		line-height: 40px;
+		cursor: pointer;
+		font-size: 12px;
+	}
+	
+	.pdq-controll-wrap .pdq-playback-rate .pdq-playback-text.active {
+		color: #f01616;
+		background: #1f2429
+	}
+	/*加载动画*/
+	
+	.pdq-load-wrap {
+		width: 100%;
+		height: 100%;
+		z-index: 21474836450;
+		background: #1f2429;
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+	
+	.pdq-load-wrap .pdq-loading-list {
+		display: block;
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		width: 80px;
+		height: 30px;
+		margin: auto;
+	}
+	
+	.pdq-load-wrap .pdq-loading-list i {
+		float: left;
+		margin: 0 4px;
+		display: block;
+		width: 5px;
+		height: 30px;
+		background: #fff;
+		-webkit-transform: scaleY(0.8);
+		-ms-transform: scaleY(0.8);
+		transform: scaleY(0.8);
+		-webkit-animation: load 1.2s infinite;
+		animation: load 1.2s infinite;
+	}
+	
+	.pdq-load-wrap .pdq-loading-list i:nth-child(2) {
+		-webkit-animation-delay: 0.1s;
+		animation-delay: 0.1s
+	}
+	
+	.pdq-load-wrap .pdq-loading-list i:nth-child(3) {
+		-webkit-animation-delay: 0.2s;
+		animation-delay: 0.2s
+	}
+	
+	.pdq-load-wrap .pdq-loading-list i:nth-child(4) {
+		-webkit-animation-delay: 0.3s;
+		animation-delay: 0.3s
+	}
+	
+	.pdq-load-wrap .pdq-loading-list i:nth-child(5) {
+		-webkit-animation-delay: 0.4s;
+		animation-delay: 0.4s
+	}
+	
+	.pdq-load-wrap .pdq-loading-list i:nth-child(6) {
+		-webkit-animation-delay: 0.5s;
+		animation-delay: 0.5s
+	}
+	
+	@-webkit-keyframes load {
+		0%,
+		40%,
+		100% {
+			-webkit-transform: scaleY(0.5);
+			transform: scaleY(0.5)
+		}
+		20% {
+			-webkit-transform: scaleY(01);
+			transform: scaleY(01)
+		}
+	}
+	
+	@keyframes load {
+		0%,
+		40%,
+		100% {
+			-webkit-transform: scaleY(0.5);
+			transform: scaleY(0.5)
+		}
+		20% {
+			-webkit-transform: scaleY(01);
+			transform: scaleY(01)
+		}
+	}
+	/*控制器消失动画*/
+	/*@keyframes vhide {
+		0% {opacity: 1;}
+		100% {opacity: 0;}}
+
+	@-webkit-keyframes vhide {
+		0% {opacity: 1;}
+		100% {opacity: 0;}
+	}
+	
+	.vhidden {
+		animation: vhide 10.5s ease-in;
+		-webkit-animation: vhide 10.5s ease-in;
+		animation-fill-mode:forwards;
+		-webkit-animation-fill-mode: forwards;
+	}*/
+	/*暂停*/
+	
+	.pdq-right-pause {
+		position: absolute;
+		width: 46px;
+		height: 46px;
+		background: #eee url(../images/pause-right.png) no-repeat center;
+		right: 0px;
+		bottom: 0px;
+		left: 0px;
+		top: 0px;
+		margin: auto;
+		border-radius: 50%;
+		cursor: pointer;
+		z-index: 21474836459;
+		display: none;
+	}
